@@ -14,12 +14,6 @@ import { EventType } from "./EventType";
                 sides: 10
             }
         }
-    },
-    data: {
-        offduty: [],
-        sleeperBerth: [],
-        driving: [],
-        onDuty: []
     }
 }
 

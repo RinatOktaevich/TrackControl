@@ -2,18 +2,16 @@ import { Time } from './Time'
 
 export class TimeUtil {
 
-    static sumUpTimes(_dateOne: Date, _dateTwo: Date) {
+    static sumUpTimes(_timeOne: Time, _timeTwo: Time) {
 
         let dateOne = {
-            hoursInSeconds: _dateOne.getHours() * 60 * 60,
-            minutesInSeconds: _dateOne.getMinutes() * 60,
-            seconds: _dateOne.getSeconds()
+            hoursInSeconds: _timeOne.hours * 60 * 60,
+            minutesInSeconds: _timeOne.minutes * 60
         };
 
         let dateTwo = {
-            hoursInSeconds: _dateTwo.getHours() * 60 * 60,
-            minutesInSeconds: _dateTwo.getMinutes() * 60,
-            seconds: _dateTwo.getSeconds()
+            hoursInSeconds: _timeTwo.hours * 60 * 60,
+            minutesInSeconds: _timeTwo.minutes * 60
         };
 
 
@@ -29,12 +27,12 @@ export class TimeUtil {
         return TimeUtil.secondsConvertToTime(sumSeconds);
     }
 
-    static differDates(_endDate:Date, _startDate:Date) {
+    static differDates(_endDate: Date, _startDate: Date) {
         let millisecondsResult = +_endDate - +_startDate;
         return this.millisecondsConvertToTime(millisecondsResult);
     }
 
-    static secondsConvertToTime(seconds:number) {
+    static secondsConvertToTime(seconds: number) {
         let mins = seconds / 60;
         let hoursWithChange = (mins / 60);
         let hours = Math.floor(hoursWithChange);
@@ -44,7 +42,7 @@ export class TimeUtil {
         return new Time(hours, minutes);
     }
 
-    static millisecondsConvertToTime(milliseconds:number) {
+    static millisecondsConvertToTime(milliseconds: number) {
         let mins = milliseconds / 1000 / 60;
         let hoursWithChange = (mins / 60);
         let hours = Math.floor(hoursWithChange);
