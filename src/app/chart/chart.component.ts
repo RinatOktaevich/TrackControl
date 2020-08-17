@@ -5,6 +5,7 @@ import { Directions } from "./../../assets/Direction";
 import { Data } from '@angular/router';
 import { EventType } from "./../../assets/EventType";
 import { TimeUtil } from "./../../assets/TimeUtil";
+import { DateUtil } from "./../../assets/DateUtil";
 
 
 @Component({
@@ -77,7 +78,7 @@ export class ChartComponent implements OnInit, AfterViewChecked {
     this.rows = this.canvasConfig.grid.rows;
     this.gridStartCoordinate = (this.canvasConfig.width - (this.cellSize * this.cols)) / 2;
 
-    this.startPoint = new Point(this.gridStartCoordinate, 30);
+    this.startPoint = new Point(this.gridStartCoordinate, 50);
 
     this.tempX = this.startPoint.x;
     this.tempY = this.startPoint.y;
@@ -126,9 +127,23 @@ export class ChartComponent implements OnInit, AfterViewChecked {
 
 
   private text() {
+    this.drawCurrentDate();
     this.drawHours();
     this.drawStateLabels();
     this.TimedurationPerState();
+  }
+
+
+
+  private drawCurrentDate() {
+    let date: Date = this.dataArr[0].date;
+    let currentDate: string = DateUtil.DateConverter(date);
+
+    this.ctx.font = "20px sans-serif";
+    this.ctx.fillStyle = "#000";
+    this.ctx.fillText(currentDate, this.tempX + (this.cellSize * 10), this.tempY -30);
+
+
   }
 
 
