@@ -1,7 +1,7 @@
 import { Data } from "./Data";
 import { EventType } from "./EventType";
 
- export const canvasConf = {
+export const canvasConf = {
     width: 1200,
     heigth: 300,
     grid: {
@@ -20,9 +20,9 @@ import { EventType } from "./EventType";
 
 
 
- 
 
-export const dataArr:Data[] =
+
+export const dataArr: Data[] =
     [
         //sleep
         new Data(new Date(2020, 8, 15, 1, 25), 25, 35, EventType.SleeperBerth),
@@ -50,7 +50,7 @@ export const dataArr:Data[] =
         new Data(new Date(2020, 8, 15, 21, 2), 25, 35, EventType.OnDuty),
 
         //go home
-        new Data(new Date(2020, 8, 15, 21, 45), 25, 35, EventType.OffDuty)
+        new Data(new Date(2020, 8, 15, 22, 35), 25, 35, EventType.OffDuty),
 
     ];
 

@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { canvasConf } from "./../assets/constants";
+import { canvasConf, dataArr } from "./../assets/constants";
+import { Data } from '@angular/router';
 
 @Component({
   selector: 'app-root',
@@ -10,8 +11,13 @@ export class AppComponent implements OnInit {
   // canvasConf: any;
 
   canvasConf;
+  dataArray: Data[];
 
   ngOnInit(): void {
     this.canvasConf = canvasConf;
+    
+
+    this.dataArray = dataArr;
+    console.log(this.dataArray);
   }
 }

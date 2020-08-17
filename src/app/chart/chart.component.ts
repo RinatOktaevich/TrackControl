@@ -128,87 +128,102 @@ export class ChartComponent implements OnInit, AfterViewChecked {
   private text() {
     this.drawHours();
     this.drawStateLabels();
-    this.drawTimedurationPerState();
+    this.TimedurationPerState();
   }
 
 
-  private drawTimedurationPerState() {
+  private TimedurationPerState() {
 
-    let offDutyTimeDur: Time;
-    let sbTimeDur: Time;
-    let onDutyTimeDur: Time;
-    let driveTimeDur: Time;
+    let timeDurations = {
+      offDutyTimeDur: new Time(0, 0),
+      sbTimeDur: new Time(0, 0),
+      onDutyTimeDur: new Time(0, 0),
+      driveTimeDur: new Time(0, 0)
+    };
 
-    this.calculateTimeDurations(offDutyTimeDur, sbTimeDur, onDutyTimeDur, driveTimeDur);
+    this.calculateTimeDurations(timeDurations);
+    this.drawTimeDurations(timeDurations);
 
   }
 
+  private drawTimeDurations(timeDurations) {
+    this.ctx.font = "18px sans-serif";
+    //OFF
+    this.ctx.fillStyle = "#AA4E44";
+    this.ctx.fillText(timeDurations.offDutyTimeDur, this.tempX + (this.cols * this.cellSize) + 10, this.tempY + this.cellHalf + 3);
 
-  private calculateTimeDurations(offDutyTimeDur: Time, sbTimeDur: Time, onDutyTimeDur: Time, driveTimeDur: Time) {
+    //SB
+    this.ctx.fillStyle = "#303F4B";
+    this.ctx.fillText(timeDurations.sbTimeDur, this.tempX + (this.cols * this.cellSize) + 10, this.tempY + (this.cellSize + this.cellHalf) + 3);
+
+    //D
+    this.ctx.fillStyle = "#627C5F";
+    this.ctx.fillText(timeDurations.driveTimeDur, this.tempX + (this.cols * this.cellSize) + 10, this.tempY + (this.cellSize * 2 + this.cellHalf) + 3);
+
+    //ON
+    this.ctx.fillStyle = "#D27D2A";
+    this.ctx.fillText(timeDurations.onDutyTimeDur, this.tempX + (this.cols * this.cellSize) + 10, this.tempY + (this.cellSize * 3 + this.cellHalf) + 3);
+  }
+
+
+  private calculateTimeDurations(timeDurations) {
+    let endOfTheDay: Date = new Date(this.dataArr[0].date.toUTCString());
+
+    endOfTheDay.setHours(23);
+    endOfTheDay.setMinutes(59);
+    endOfTheDay.setSeconds(59);
+
+
     for (let index = 0; index < this.dataArr.length; index++) {
-      const element = this.dataArr[index];
+      const element: Data = this.dataArr[index];
       const nextElem = index + 1 < this.dataArr.length ? this.dataArr[index + 1] : null;
 
+      console.log("START iteration");
+
+      console.log(timeDurations.offDutyTimeDur);
 
       switch (element.eventType) {
         case EventType.Driving:
-
           if (nextElem != null) {
             let diffTime = TimeUtil.differDates(nextElem.date, element.date);
-            driveTimeDur = TimeUtil.sumUpTimes(diffTime, driveTimeDur);
+            timeDurations.driveTimeDur = TimeUtil.sumUpTimes(diffTime, timeDurations.driveTimeDur);
           } else {
-            let endOfTheDay = element.date;
-            endOfTheDay.setHour(23);
-            endOfTheDay.setMinutes(59);
-            endOfTheDay.setSeconds(59);
-
             let diffTime = TimeUtil.differDates(endOfTheDay, element.date);
-            driveTimeDur = TimeUtil.sumUpTimes(diffTime, driveTimeDur);
+            timeDurations.driveTimeDur = TimeUtil.sumUpTimes(diffTime, timeDurations.driveTimeDur);
           }
           break;
         case EventType.OffDuty:
           if (nextElem != null) {
             let diffTime = TimeUtil.differDates(nextElem.date, element.date);
-            offDutyTimeDur = TimeUtil.sumUpTimes(diffTime, offDutyTimeDur);
+            timeDurations.offDutyTimeDur = TimeUtil.sumUpTimes(diffTime, timeDurations.offDutyTimeDur);
           } else {
-            let endOfTheDay = element.date;
-            endOfTheDay.setHour(23);
-            endOfTheDay.setMinutes(59);
-            endOfTheDay.setSeconds(59);
-
             let diffTime = TimeUtil.differDates(endOfTheDay, element.date);
-            offDutyTimeDur = TimeUtil.sumUpTimes(diffTime, offDutyTimeDur);
+            timeDurations.offDutyTimeDur = TimeUtil.sumUpTimes(diffTime, timeDurations.offDutyTimeDur);
           }
           break;
         case EventType.OnDuty:
           if (nextElem != null) {
             let diffTime = TimeUtil.differDates(nextElem.date, element.date);
-            onDutyTimeDur = TimeUtil.sumUpTimes(diffTime, onDutyTimeDur);
+            timeDurations.onDutyTimeDur = TimeUtil.sumUpTimes(diffTime, timeDurations.onDutyTimeDur);
           } else {
-            let endOfTheDay = element.date;
-            endOfTheDay.setHour(23);
-            endOfTheDay.setMinutes(59);
-            endOfTheDay.setSeconds(59);
-
             let diffTime = TimeUtil.differDates(endOfTheDay, element.date);
-            onDutyTimeDur = TimeUtil.sumUpTimes(diffTime, onDutyTimeDur);
+            timeDurations.onDutyTimeDur = TimeUtil.sumUpTimes(diffTime, timeDurations.onDutyTimeDur);
           }
           break;
         case EventType.SleeperBerth:
           if (nextElem != null) {
             let diffTime = TimeUtil.differDates(nextElem.date, element.date);
-            sbTimeDur = TimeUtil.sumUpTimes(diffTime, sbTimeDur);
+            timeDurations.sbTimeDur = TimeUtil.sumUpTimes(diffTime, timeDurations.sbTimeDur);
           } else {
-            let endOfTheDay = element.date;
-            endOfTheDay.setHour(23);
-            endOfTheDay.setMinutes(59);
-            endOfTheDay.setSeconds(59);
-
             let diffTime = TimeUtil.differDates(endOfTheDay, element.date);
-            sbTimeDur = TimeUtil.sumUpTimes(diffTime, sbTimeDur);
+            timeDurations.sbTimeDur = TimeUtil.sumUpTimes(diffTime, timeDurations.sbTimeDur);
           }
           break;
       }
+      console.log(`${index}  END iteration `);
+
+      console.log(timeDurations.offDutyTimeDur);
+
     }
   }
 
