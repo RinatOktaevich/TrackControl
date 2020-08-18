@@ -1,3 +1,16 @@
 canvas {
     border: solid rgb(199, 199, 199) 1px;
 }
+
+#canvas-wrap {
+    position: relative;
+    & .stroke {
+        position: absolute;
+        // top: 0;
+        // left: 0;
+        // height: 20px;
+        // width: 100px;
+        // border: solid red 1px;
+        // background-color: aqua;
+    }
+}

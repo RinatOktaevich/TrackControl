@@ -27,6 +27,7 @@ import { DateUtil } from "./../../assets/DateUtil";
 })
 export class ChartComponent implements OnInit, AfterViewChecked {
 
+  private canvasWrap: HTMLElement;
   private canvas: any;
   private ctx: CanvasRenderingContext2D;
 
@@ -73,6 +74,8 @@ export class ChartComponent implements OnInit, AfterViewChecked {
     this.canvas = document.getElementById("chart");
     this.ctx = this.canvas.getContext('2d');
 
+    this.canvasWrap = document.getElementById("canvas-wrap");
+
     this.Render();
   }
 
@@ -107,11 +110,71 @@ export class ChartComponent implements OnInit, AfterViewChecked {
   public Render() {
     this.grid();
     this.text();
-    this.paths();
+    this.pathsViaHTML();
   }
 
 
+  private pathsViaHTML() {
 
+    for (let index = 0; index < this.dataArr.length; index++) {
+      const element = this.dataArr[index];
+
+      let x;
+      let y;
+      let fillColor;
+      if (index == 0) {
+        x = this.tempX + this.timeToStrokeLength(new Time(element.date.getHours(), element.date.getMinutes()));
+      } else {
+        x = this.dataArr[index - 1].lineStroke.endPoint.x;
+      }
+
+      switch (element.eventType) {
+        case EventType.Driving:
+          fillColor = this.drivingColor;
+          y = this.tempY + this.cellSize * 2 + this.cellHalf;
+          break;
+        case EventType.OffDuty:
+          fillColor = this.offDutyColor;
+          y = this.tempY + this.cellHalf;
+
+          break;
+        case EventType.OnDuty:
+          fillColor = this.onDutyColor;
+          y = this.tempY + this.cellSize * 3 + this.cellHalf;
+
+          break;
+        case EventType.SleeperBerth:
+          fillColor = this.sleeperBerthColor;
+          y = this.tempY + this.cellSize + this.cellHalf;
+
+          break;
+      }
+
+      let strokeWidth: number = this.timeToStrokeLength(element.timeInState);
+      // this.stroke(x, y, strokeWidth, Directions.right);
+      this.createAndAppendPath(x, y, strokeWidth, fillColor);
+      element["lineStroke"] = {
+        startPoint: new Point(x, y),
+        endPoint: new Point(x + strokeWidth, y)
+      };
+
+    }
+  }
+
+  private createAndAppendPath(x, y, length, fillColor) {
+    let path = document.createElement("div");
+    path.classList.add("stroke");
+    // path.style.cssText = `background-color:${fillColor};height:${7}px; width:${length}`;
+    path.style.position = "absolute";
+
+    path.style.backgroundColor = fillColor;
+    path.style.height = "7px";
+    path.style.width = `${length}px`;
+    path.style.left = `${x}px`;
+    path.style.top = `${y}px`;
+
+    this.canvasWrap.appendChild(path);
+  }
 
 
   private grid() {
@@ -146,52 +209,6 @@ export class ChartComponent implements OnInit, AfterViewChecked {
   }
 
 
-  paths() {
-    this.ctx.lineWidth = 7;
-
-    for (let index = 0; index < this.dataArr.length; index++) {
-      const element = this.dataArr[index];
-
-      let x;
-      let y;
-      if (index == 0) {
-        x = this.tempX + this.timeToStrokeLength(new Time(element.date.getHours(), element.date.getMinutes()));
-      } else {
-        x = this.dataArr[index - 1].lineStroke.endPoint.x;
-      }
-
-      switch (element.eventType) {
-        case EventType.Driving:
-          this.ctx.strokeStyle = this.drivingColor;
-          y = this.tempY + this.cellSize * 2 + this.cellHalf;
-          break;
-        case EventType.OffDuty:
-          this.ctx.strokeStyle = this.offDutyColor;
-          y = this.tempY + this.cellHalf;
-
-          break;
-        case EventType.OnDuty:
-          this.ctx.strokeStyle = this.onDutyColor;
-          y = this.tempY + this.cellSize * 3 + this.cellHalf;
-
-          break;
-        case EventType.SleeperBerth:
-          this.ctx.strokeStyle = this.sleeperBerthColor;
-          y = this.tempY + this.cellSize + this.cellHalf;
-
-          break;
-      }
-
-      let strokeWidth: number = this.timeToStrokeLength(element.timeInState);
-      this.stroke(x, y, strokeWidth, Directions.right);
-      element["lineStroke"] = {
-        startPoint: new Point(x, y),
-        endPoint: new Point(x + strokeWidth, y)
-      };
-
-    }
-
-  }
 
   private text() {
     this.drawCurrentDate();
