@@ -15,9 +15,8 @@ export class AppComponent implements OnInit {
 
   ngOnInit(): void {
     this.canvasConf = canvasConf;
-    
-
     this.dataArray = dataArr;
-    console.log(this.dataArray);
+
+
   }
 }

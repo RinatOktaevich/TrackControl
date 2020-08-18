@@ -24,6 +24,9 @@ export const canvasConf = {
 
 export const dataArr: Data[] =
     [
+        //work from last day
+        new Data(new Date(2020, 8, 15, 0, 0), 25, 35, EventType.OnDuty),
+
         //sleep
         new Data(new Date(2020, 8, 15, 1, 25), 25, 35, EventType.SleeperBerth),
         //woke up

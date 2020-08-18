@@ -8,6 +8,18 @@ import { TimeUtil } from "./../../assets/TimeUtil";
 import { DateUtil } from "./../../assets/DateUtil";
 
 
+//*
+//*
+//*
+//Dynamic props in Data object added here in this component
+//@timeInState - represent the time from the begining of an event to the next event
+//@lineStroke - 
+//----startPoint:Point
+//----endPoint:Point
+//*
+//*
+//*
+
 @Component({
   selector: 'app-chart',
   templateUrl: './chart.component.html',
@@ -35,7 +47,6 @@ export class ChartComponent implements OnInit, AfterViewChecked {
   private cellCenterDivider;
 
   // grid config variables
-  //to make grid centered
   private cols;
   private rows;
   private gridStartCoordinate;
@@ -48,6 +59,11 @@ export class ChartComponent implements OnInit, AfterViewChecked {
   private columnslineWidth;
   private rowsLineHeight;
 
+  //stroke`s colors per state
+  private offDutyColor = "#E53A3A";
+  private sleeperBerthColor = "#246299";
+  private drivingColor = "#3E783E";
+  private onDutyColor = "#F2BF44";
 
 
   constructor() {
@@ -56,7 +72,6 @@ export class ChartComponent implements OnInit, AfterViewChecked {
   ngAfterViewChecked() {
     this.canvas = document.getElementById("chart");
     this.ctx = this.canvas.getContext('2d');
-
 
     this.Render();
   }
@@ -73,9 +88,9 @@ export class ChartComponent implements OnInit, AfterViewChecked {
     this.cellCenterDivider = this.canvasConfig.grid.cell.dividersLength.center;
 
     // grid config variables
-    //to make grid centered
     this.cols = this.canvasConfig.grid.cols;
     this.rows = this.canvasConfig.grid.rows;
+    //to make grid centered
     this.gridStartCoordinate = (this.canvasConfig.width - (this.cellSize * this.cols)) / 2;
 
     this.startPoint = new Point(this.gridStartCoordinate, 50);
@@ -92,12 +107,17 @@ export class ChartComponent implements OnInit, AfterViewChecked {
   public Render() {
     this.grid();
     this.text();
+    this.paths();
   }
+
+
 
 
 
   private grid() {
     this.ctx.strokeStyle = "#d1d0d0";
+    this.ctx.lineWidth = 1;
+
 
     //horizontal lines
     for (let i = 0; i <= this.rows; i++) {
@@ -126,6 +146,53 @@ export class ChartComponent implements OnInit, AfterViewChecked {
   }
 
 
+  paths() {
+    this.ctx.lineWidth = 7;
+
+    for (let index = 0; index < this.dataArr.length; index++) {
+      const element = this.dataArr[index];
+
+      let x;
+      let y;
+      if (index == 0) {
+        x = this.tempX + this.timeToStrokeLength(new Time(element.date.getHours(), element.date.getMinutes()));
+      } else {
+        x = this.dataArr[index - 1].lineStroke.endPoint.x;
+      }
+
+      switch (element.eventType) {
+        case EventType.Driving:
+          this.ctx.strokeStyle = this.drivingColor;
+          y = this.tempY + this.cellSize * 2 + this.cellHalf;
+          break;
+        case EventType.OffDuty:
+          this.ctx.strokeStyle = this.offDutyColor;
+          y = this.tempY + this.cellHalf;
+
+          break;
+        case EventType.OnDuty:
+          this.ctx.strokeStyle = this.onDutyColor;
+          y = this.tempY + this.cellSize * 3 + this.cellHalf;
+
+          break;
+        case EventType.SleeperBerth:
+          this.ctx.strokeStyle = this.sleeperBerthColor;
+          y = this.tempY + this.cellSize + this.cellHalf;
+
+          break;
+      }
+
+      let strokeWidth: number = this.timeToStrokeLength(element.timeInState);
+      this.stroke(x, y, strokeWidth, Directions.right);
+      element["lineStroke"] = {
+        startPoint: new Point(x, y),
+        endPoint: new Point(x + strokeWidth, y)
+      };
+
+    }
+
+  }
+
   private text() {
     this.drawCurrentDate();
     this.drawHours();
@@ -141,7 +208,7 @@ export class ChartComponent implements OnInit, AfterViewChecked {
 
     this.ctx.font = "20px sans-serif";
     this.ctx.fillStyle = "#000";
-    this.ctx.fillText(currentDate, this.tempX + (this.cellSize * 10), this.tempY -30);
+    this.ctx.fillText(currentDate, this.tempX + (this.cellSize * 10), this.tempY - 30);
 
 
   }
@@ -193,53 +260,49 @@ export class ChartComponent implements OnInit, AfterViewChecked {
       const element: Data = this.dataArr[index];
       const nextElem = index + 1 < this.dataArr.length ? this.dataArr[index + 1] : null;
 
-      console.log("START iteration");
-
-      console.log(timeDurations.offDutyTimeDur);
+      let diffTime: Time;
 
       switch (element.eventType) {
         case EventType.Driving:
           if (nextElem != null) {
-            let diffTime = TimeUtil.differDates(nextElem.date, element.date);
-            timeDurations.driveTimeDur = TimeUtil.sumUpTimes(diffTime, timeDurations.driveTimeDur);
+            diffTime = TimeUtil.differDates(nextElem.date, element.date);
           } else {
-            let diffTime = TimeUtil.differDates(endOfTheDay, element.date);
-            timeDurations.driveTimeDur = TimeUtil.sumUpTimes(diffTime, timeDurations.driveTimeDur);
+            diffTime = TimeUtil.differDates(endOfTheDay, element.date);
           }
+          timeDurations.driveTimeDur = TimeUtil.sumUpTimes(diffTime, timeDurations.driveTimeDur);
+          element["timeInState"] = diffTime;
           break;
         case EventType.OffDuty:
           if (nextElem != null) {
-            let diffTime = TimeUtil.differDates(nextElem.date, element.date);
-            timeDurations.offDutyTimeDur = TimeUtil.sumUpTimes(diffTime, timeDurations.offDutyTimeDur);
+            diffTime = TimeUtil.differDates(nextElem.date, element.date);
           } else {
-            let diffTime = TimeUtil.differDates(endOfTheDay, element.date);
-            timeDurations.offDutyTimeDur = TimeUtil.sumUpTimes(diffTime, timeDurations.offDutyTimeDur);
+            diffTime = TimeUtil.differDates(endOfTheDay, element.date);
           }
+          timeDurations.offDutyTimeDur = TimeUtil.sumUpTimes(diffTime, timeDurations.offDutyTimeDur);
+          element["timeInState"] = diffTime;
           break;
         case EventType.OnDuty:
           if (nextElem != null) {
-            let diffTime = TimeUtil.differDates(nextElem.date, element.date);
-            timeDurations.onDutyTimeDur = TimeUtil.sumUpTimes(diffTime, timeDurations.onDutyTimeDur);
+            diffTime = TimeUtil.differDates(nextElem.date, element.date);
           } else {
-            let diffTime = TimeUtil.differDates(endOfTheDay, element.date);
-            timeDurations.onDutyTimeDur = TimeUtil.sumUpTimes(diffTime, timeDurations.onDutyTimeDur);
+            diffTime = TimeUtil.differDates(endOfTheDay, element.date);
           }
+          timeDurations.onDutyTimeDur = TimeUtil.sumUpTimes(diffTime, timeDurations.onDutyTimeDur);
+          element["timeInState"] = diffTime;
           break;
         case EventType.SleeperBerth:
           if (nextElem != null) {
-            let diffTime = TimeUtil.differDates(nextElem.date, element.date);
-            timeDurations.sbTimeDur = TimeUtil.sumUpTimes(diffTime, timeDurations.sbTimeDur);
+            diffTime = TimeUtil.differDates(nextElem.date, element.date);
           } else {
-            let diffTime = TimeUtil.differDates(endOfTheDay, element.date);
-            timeDurations.sbTimeDur = TimeUtil.sumUpTimes(diffTime, timeDurations.sbTimeDur);
+            diffTime = TimeUtil.differDates(endOfTheDay, element.date);
           }
+          timeDurations.sbTimeDur = TimeUtil.sumUpTimes(diffTime, timeDurations.sbTimeDur);
+          element["timeInState"] = diffTime;
           break;
       }
-      console.log(`${index}  END iteration `);
-
-      console.log(timeDurations.offDutyTimeDur);
 
     }
+
   }
 
 
@@ -322,9 +385,16 @@ export class ChartComponent implements OnInit, AfterViewChecked {
         break;
     }
 
+    this.ctx.beginPath()
     this.ctx.moveTo(startPoint.x, startPoint.y);
     this.ctx.lineTo(endPoint.x, endPoint.y);
     this.ctx.stroke();
+    this.ctx.closePath();
   }
+
+  private timeToStrokeLength(time: Time): number {
+    return (time.hours * this.cellSize) + (this.cellSize / 60 * time.minutes);
+  }
+
 
 }

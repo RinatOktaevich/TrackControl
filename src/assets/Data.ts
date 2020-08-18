@@ -1,6 +1,7 @@
 import { EventType } from "./EventType";
 
 export class Data {
+    [x: string]: any;
     date;
     lat;
     lng;
