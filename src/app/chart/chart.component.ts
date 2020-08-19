@@ -78,9 +78,26 @@ export class ChartComponent implements OnInit, AfterViewInit {
 
   constructor() {
   }
+  private hideAnchors() {
+    let strokes = document.getElementsByClassName("stroke");
 
+    for (let index = 0; index < strokes.length; index++) {
+      const element: HTMLElement = <HTMLElement>strokes[index];
+      element.style.backgroundColor = this.EventTypeToColorPalette(element.classList[1]).mainColor;
+    }
+
+    // this.EventTypeToColorPalette(elem.classList[1]).mainColor;
+
+    let leftAnc = document.getElementById("anchor__left");
+    let rightAnc = document.getElementById("anchor__right");
+
+    leftAnc.style.display = "none";
+    rightAnc.style.display = "none";
+  }
   ngAfterViewInit() {
     this.canvas = document.getElementById("chart");
+    this.canvas.addEventListener("click", this.hideAnchors.bind(this));
+
     this.ctx = this.canvas.getContext('2d');
 
     this.canvasWrap = document.getElementById("canvas-wrap");
@@ -194,7 +211,6 @@ export class ChartComponent implements OnInit, AfterViewInit {
 
     let x2 = elemLeftPos + elemWidth - xPosOffset;
     let y2 = elemTopPos;
-    console.log("Anchor");
 
     this.showAnchors(new Point(x1, y1), new Point(x2, y2), anchorHeight);
   }
