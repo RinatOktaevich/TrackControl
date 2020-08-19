@@ -161,8 +161,24 @@ export class ChartComponent implements OnInit, AfterViewChecked {
     }
   }
 
+  private pathSelected(event: Event) {
+    console.log(event);
+    console.log(event.target);
+
+  }
+
+  private showDragAbleMarkers() {
+
+    let leftMark=document.getElementById("marker__left");
+    let rightMark=document.getElementById("marker__right");
+
+
+  }
+
   private createAndAppendPath(x, y, length, fillColor) {
     let path = document.createElement("div");
+    path.addEventListener("click", this.pathSelected);
+
     path.classList.add("stroke");
     // path.style.cssText = `background-color:${fillColor};height:${7}px; width:${length}`;
     path.style.position = "absolute";
@@ -172,6 +188,7 @@ export class ChartComponent implements OnInit, AfterViewChecked {
     path.style.width = `${length}px`;
     path.style.left = `${x}px`;
     path.style.top = `${y}px`;
+    path.style.cursor = "pointer";
 
     this.canvasWrap.appendChild(path);
   }

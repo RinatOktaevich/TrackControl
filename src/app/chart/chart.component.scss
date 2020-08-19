@@ -4,13 +4,37 @@ canvas {
 
 #canvas-wrap {
     position: relative;
-    & .stroke {
+    & .pathDivider {
+        // display: none;
         position: absolute;
-        // top: 0;
-        // left: 0;
-        // height: 20px;
-        // width: 100px;
-        // border: solid red 1px;
-        // background-color: aqua;
+        z-index: 3;
+        top: 165px;
+
+        &#anchor__left {
+            left: 100px;
+        }
+        &#anchor__right {
+            left: 200px;
+        }
+    }
+    & .anchor {
+        display: none;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding: none;
+        width: 15px;
+        height: 150px;
+        .dash {
+            height: 100%;
+            width: 3px;
+            background: repeating-linear-gradient(to bottom, #245A66 0, #245A66 10px, transparent 10px, transparent 14px);
+        }
+        .marker {
+            height: 20px;
+            width: 14px;
+            cursor: pointer;
+        }
     }
 }
