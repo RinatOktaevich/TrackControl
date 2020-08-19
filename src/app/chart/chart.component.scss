@@ -5,11 +5,10 @@ canvas {
 #canvas-wrap {
     position: relative;
     & .pathDivider {
-        // display: none;
+        display: none;
         position: absolute;
         z-index: 3;
         top: 165px;
-
         &#anchor__left {
             left: 100px;
         }
@@ -18,7 +17,6 @@ canvas {
         }
     }
     & .anchor {
-        display: none;
         display: flex;
         flex-direction: column;
         justify-content: center;

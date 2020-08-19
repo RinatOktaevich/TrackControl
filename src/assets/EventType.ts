@@ -1,6 +1,6 @@
 export enum EventType {
-    OffDuty,
-    SleeperBerth,
-    Driving,
-    OnDuty
+    OffDuty="offDuty",
+    SleeperBerth="sleeperBerth",
+    Driving="driving",
+    OnDuty="onDuty"
 };
