@@ -53,10 +53,10 @@ export class ChartComponent implements OnInit, AfterViewInit {
   private rows;
   private gridStartCoordinate;
 
-  private startPoint;
+  private startPoint: Point;
 
-  private tempX;
-  private tempY;
+  private tempX: number;
+  private tempY: number;
 
   private columnslineWidth;
   private rowsLineHeight;
@@ -183,28 +183,38 @@ export class ChartComponent implements OnInit, AfterViewInit {
 
     //show anchors
     let xPosOffset = 7.5;
-    let x1 = this.PxToValue(elem.style.left) - xPosOffset;
-    let y1 = this.tempY + 100;
+    let yPosOffset = 28;
+    let anchorHeight = (this.tempY + this.cellSize * 4) - this.PxToValue(elem.style.top) + yPosOffset;
 
-    let x2 = this.PxToValue(elem.style.left) + this.PxToValue(elem.style.width) - xPosOffset;
-    let y2 = this.tempY + 100;
+    let elemLeftPos = this.PxToValue(elem.style.left);
+    let elemTopPos = this.PxToValue(elem.style.top);
+    let elemWidth = this.PxToValue(elem.style.width);
+    let x1 = elemLeftPos - xPosOffset;
+    let y1 = elemTopPos;
 
-    this.showAnchors(new Point(x1, y1), new Point(x2, y2));
+    let x2 = elemLeftPos + elemWidth - xPosOffset;
+    let y2 = elemTopPos;
+    console.log("Anchor");
+
+    this.showAnchors(new Point(x1, y1), new Point(x2, y2), anchorHeight);
   }
 
 
-  private showAnchors(leftAnchorPoint: Point, rightAnchorPoint: Point) {
+  private showAnchors(leftAnchorPoint: Point, rightAnchorPoint: Point, height) {
     let leftAnc = document.getElementById("anchor__left");
     let rightAnc = document.getElementById("anchor__right");
 
     leftAnc.style.display = "block";
     rightAnc.style.display = "block";
 
+    leftAnc.style.height = `${height}px`;
+    rightAnc.style.height = `${height}px`;
+
     leftAnc.style.left = leftAnchorPoint.x.toString() + "px";
-    leftAnc.style.top = leftAnchorPoint.y.toString();
+    leftAnc.style.top = leftAnchorPoint.y.toString() + "px";
 
     rightAnc.style.left = rightAnchorPoint.x.toString() + "px";
-    rightAnc.style.top = rightAnchorPoint.y.toString();
+    rightAnc.style.top = rightAnchorPoint.y.toString() + "px";
   }
 
   private showDragAbleMarkers() {
