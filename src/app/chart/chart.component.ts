@@ -181,21 +181,18 @@ export class ChartComponent implements OnInit, AfterViewInit {
       node.style.backgroundColor = this.EventTypeToColorPalette(node.classList[1]).dimColor;
     }
 
-
     //show anchors
-
-    let x1 = elem.style.left;
+    let xPosOffset = 7.5;
+    let x1 = this.PxToValue(elem.style.left) - xPosOffset;
     let y1 = this.tempY + 100;
 
-
-    let x2 = this.PxToValue(elem.style.left) + this.PxToValue(elem.style.width);
+    let x2 = this.PxToValue(elem.style.left) + this.PxToValue(elem.style.width) - xPosOffset;
     let y2 = this.tempY + 100;
 
-
-
     this.showAnchors(new Point(x1, y1), new Point(x2, y2));
-
   }
+
+
   private showAnchors(leftAnchorPoint: Point, rightAnchorPoint: Point) {
     let leftAnc = document.getElementById("anchor__left");
     let rightAnc = document.getElementById("anchor__right");
@@ -203,13 +200,11 @@ export class ChartComponent implements OnInit, AfterViewInit {
     leftAnc.style.display = "block";
     rightAnc.style.display = "block";
 
-    leftAnc.style.left = leftAnchorPoint.x.toString();
+    leftAnc.style.left = leftAnchorPoint.x.toString() + "px";
     leftAnc.style.top = leftAnchorPoint.y.toString();
 
-    rightAnc.style.left = rightAnchorPoint.x.toString()+"px";
+    rightAnc.style.left = rightAnchorPoint.x.toString() + "px";
     rightAnc.style.top = rightAnchorPoint.y.toString();
-
-
   }
 
   private showDragAbleMarkers() {
@@ -484,7 +479,7 @@ export class ChartComponent implements OnInit, AfterViewInit {
   }
 
   private PxToValue(styleValue: string): number {
-    const res= /(.+)px/.exec(styleValue)[1];
+    const res = /(.+)px/.exec(styleValue)[1];
 
     return +res;
   }
