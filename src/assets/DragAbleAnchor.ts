@@ -1,31 +1,64 @@
-import { Data, PathData } from "./Data"
+import { PathData } from "./Data"
+import { fromEvent } from 'rxjs'
+import { takeUntil, switchMap, map } from 'rxjs/operators'
+
 export class DragAbleAnchor {
+    private anchorBlockOffset = 7;
 
-
-    const private anchorBlockOffset = 7;
-
-    private pos1: number;
-    private pos2: number;
-    private pos3: number;
-    private pos4: number;
+    private xPos1: number;
+    private xPos2: number;
     private element: HTMLElement;
     private dataObject: PathData;
     private nextDataObject: PathData;
-    private side: LeftOrRight;
     private isInPlace;
 
+    private mouseMove$;
+    private mouseDown$;
+    private mouseUp$;
+    private stream$;
 
     constructor(_element: HTMLElement, _side: LeftOrRight) {
         this.element = _element;
-        this.side = _side;
-        this.element.onmousedown = this.onMouseDown.bind(this);
 
         this.isInPlace = _side == LeftOrRight.Left ? this.leftBorderCheck : this.rightBorderCheck;
+
+        this.mouseDown$ = fromEvent(this.element, 'mousedown');
+        this.mouseMove$ = fromEvent(document, 'mousemove');
+        this.mouseUp$ = fromEvent(window, 'mouseup');
+
+        this.stream$ = this.mouseDown$
+            .pipe(
+                map((e: any) => {
+                    this.xPos2 = e.clientX;
+                    return e;
+                }
+                ),
+                switchMap(() => {
+                    return this.mouseMove$
+                        .pipe(
+                            takeUntil(this.mouseUp$)
+                        )
+                })
+            );
+
+        this.stream$.subscribe(this.onMouseMove.bind(this));
+
     }
+
 
     SetData(_data: PathData, _nextData: PathData) {
         this.dataObject = _data;
         this.nextDataObject = _nextData;
+    }
+
+    private onMouseMove(e) {
+        this.xPos1 = this.xPos2 - e.clientX;
+        this.xPos2 = e.clientX;
+        let elementPos = (this.element.offsetLeft - this.xPos1);
+
+        if (this.isInPlace(elementPos)) {
+            this.element.style.left = elementPos + "px";
+        }
     }
 
 
@@ -46,70 +79,6 @@ export class DragAbleAnchor {
         }
         return false;
     }
-
-
-
-    private onMouseDown(e) {
-        console.log("down");
-
-
-        e = e || window.event;
-        // e.preventDefault();
-        // get the mouse cursor position at startup:
-        this.pos3 = e.clientX;
-        this.pos4 = e.clientY;
-        // console.log("e");
-        // console.log(e);
-
-
-        document.onmouseup = this.onMouseUp.bind(this);
-        // console.log("this.element.onmouseup");
-        // console.log(this.element);
-
-        // call a function whenever the cursor moves:
-        document.onmousemove = this.onMouseMove.bind(this);
-    }
-
-
-    private onMouseMove(e) {
-        e = e || window.event;
-        console.log("move");
-
-        // e.preventDefault();
-        // calculate the new cursor position:
-        this.pos1 = this.pos3 - e.clientX;
-        // pos2 = pos4 - e.clientY;
-        this.pos3 = e.clientX;
-        // pos4 = e.clientY;
-        // set the element's new position:
-        // elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
-
-        // console.log((elmnt.offsetLeft - pos1) + "px");
-        // if ((this.element.offsetLeft - this.pos1) <= 612 - 7) {
-        //     this.element.style.left = (this.element.offsetLeft - this.pos1) + "px";
-        // }
-        // console.log("(this.element.offsetLeft - this.pos1) + px");
-        // console.log((this.element.offsetLeft - this.pos1) + "px");
-        // console.log("(this.element.offsetLeft - this.pos3) + px");
-        // console.log((this.element.offsetLeft - this.pos3) + "px");
-
-        let elementPos = (this.element.offsetLeft - this.pos1);
-
-        if (this.isInPlace(elementPos)) {
-            this.element.style.left = elementPos + "px";
-        }
-
-    }
-
-
-    private onMouseUp(event) {
-        // stop moving when mouse button is released:
-        document.onmouseup = null;
-        document.onmousemove = null;
-        console.log("up");
-
-    }
-
 
 }
 
