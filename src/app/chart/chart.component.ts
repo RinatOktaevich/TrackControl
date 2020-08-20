@@ -7,7 +7,8 @@ import { EventType } from "./../../assets/EventType";
 import { TimeUtil } from "./../../assets/TimeUtil";
 import { DateUtil } from "./../../assets/DateUtil";
 import { ColorPalette } from "./../../assets/ColorPalette";
-
+import { DragAbleAnchor, LeftOrRight } from "./../../assets/DragAbleAnchor";
+import { PathData } from 'src/assets/Data';
 
 //*
 //*
@@ -37,6 +38,10 @@ export class ChartComponent implements OnInit, AfterViewInit {
 
   @Input() canvasConfig: any = null;
   @Input() dataArr: Data[] = [];
+
+
+  LeftAnchor_DragAble_State: DragAbleAnchor;
+  RightAnchor_DragAble_State: DragAbleAnchor;
 
 
   //cell config variables
@@ -130,10 +135,12 @@ export class ChartComponent implements OnInit, AfterViewInit {
 
     // this.makeAnchorDragAble(<HTMLElement>leftAnchor.getElementsByClassName("marker")[0]);
     // this.makeAnchorDragAble(<HTMLElement>rightAnchor.getElementsByClassName("marker")[0]);
-    this.makeAnchorDragAble(rightAnchor);
-    this.makeAnchorDragAble(rightAnchor);
 
+    this.LeftAnchor_DragAble_State = new DragAbleAnchor(leftAnchor, LeftOrRight.Left);
+    this.RightAnchor_DragAble_State = new DragAbleAnchor(rightAnchor, LeftOrRight.Right);
 
+    // this.makeAnchorDragAble(leftAnchor);
+    // this.makeAnchorDragAble(rightAnchor);
 
   }
 
@@ -217,73 +224,51 @@ export class ChartComponent implements OnInit, AfterViewInit {
     let x2 = elemLeftPos + elemWidth - xPosOffset;
     let y2 = elemTopPos;
 
-    this.showAnchors(new Point(x1, y1), new Point(x2, y2), anchorHeight);
+    let dataId: string = elem.id;
+
+    this.showAnchors(new Point(x1, y1), new Point(x2, y2), anchorHeight, dataId);
   }
 
-  private makeAnchorDragAble(elmnt: HTMLElement) {
+  // private makeAnchorDragAble(elmnt: HTMLElement) {
+  //   var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+  //   elmnt.onmousedown = onMouseDown.bind(this);
 
-    var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+  //   // function onMouseDown(e) {
+  //   //   e = e || window.event;
+  //   //   e.preventDefault();
+  //   //   // get the mouse cursor position at startup:
+  //   //   pos3 = e.clientX;
+  //   //   pos4 = e.clientY;
+  //   //   document.onmouseup = onMouseUp.bind(this);
+  //   //   // call a function whenever the cursor moves:
+  //   //   document.onmousemove = onMouseMove.bind(this);
+  //   // }
 
-    elmnt.onmousedown = dragMouseDown;
+  //   // function onMouseMove(e) {
+  //   //   e = e || window.event;
+  //   //   e.preventDefault();
+  //   //   // calculate the new cursor position:
+  //   //   pos1 = pos3 - e.clientX;
+  //   //   // pos2 = pos4 - e.clientY;
+  //   //   pos3 = e.clientX;
+  //   //   // pos4 = e.clientY;
+  //   //   // set the element's new position:
+  //   //   // elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
 
-    // elem.addEventListener("mousedown", onMouseDown.bind(this));
-    // elem.addEventListener("mouseup", onMouseUp.bind(this));
-    // elem.addEventListener("mousemove", this.onMouseMove.bind(this));
+  //   //   // console.log((elmnt.offsetLeft - pos1) + "px");
+  //   //   if ((elmnt.offsetLeft - pos1) <= 612-7) {
+  //   //     elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
+  //   //   }
 
-    function onMouseMove(event) {
-      event.preventDefault();
-      console.log("mouse move");
-      console.log(event);
-      console.log(event.clientX);
+  //   // }
 
-      // elem.style.left = event.clientX + "px";
-      // let elem: HTMLElement = <HTMLElement>event.target;
-    }
+  //   // function onMouseUp() {
+  //   //   // stop moving when mouse button is released:
+  //   //   document.onmouseup = null;
+  //   //   document.onmousemove = null;
+  //   // }
 
-    function dragMouseDown(e) {
-      e = e || window.event;
-      e.preventDefault();
-      // get the mouse cursor position at startup:
-      pos3 = e.clientX;
-      pos4 = e.clientY;
-      document.onmouseup = closeDragElement;
-      // call a function whenever the cursor moves:
-      document.onmousemove = elementDrag;
-    }
-
-
-
-    function onMouseDown() {
-      console.log("mouse down");
-      // elem.onmousemove = onMouseMove;
-      // elem.addEventListener("mousemove", this.onMouseMove.bind(this));
-    }
-    function elementDrag(e) {
-      e = e || window.event;
-      e.preventDefault();
-      // calculate the new cursor position:
-      pos1 = pos3 - e.clientX;
-      // pos2 = pos4 - e.clientY;
-      pos3 = e.clientX;
-      // pos4 = e.clientY;
-      // set the element's new position:
-      // elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
-      elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
-    }
-
-
-
-    function onMouseUp() {
-      console.log("mouse up");
-      // elem.onmousemove = null;
-    }
-    function closeDragElement() {
-      // stop moving when mouse button is released:
-      document.onmouseup = null;
-      document.onmousemove = null;
-    }
-
-  }
+  // }
 
 
 
@@ -291,7 +276,32 @@ export class ChartComponent implements OnInit, AfterViewInit {
 
 
 
-  private showAnchors(leftAnchorPoint: Point, rightAnchorPoint: Point, height) {
+  private showAnchors(leftAnchorPoint: Point, rightAnchorPoint: Point, height, dataId: string) {
+
+    console.log("dataId");
+    console.log(dataId);
+
+    let selecteDataIndex = this.dataArr.findIndex((elem: Data) => elem.id == dataId);
+    console.log("selecteDataIndex");
+    console.log(selecteDataIndex);
+
+    const nextElem = selecteDataIndex + 1 < this.dataArr.length ? this.dataArr[selecteDataIndex + 1] : this.dataArr[selecteDataIndex];
+    const prevElem = selecteDataIndex != 0 ? this.dataArr[selecteDataIndex - 1] : this.dataArr[selecteDataIndex];
+    const currentElem = this.dataArr[selecteDataIndex];
+    // selecteDataId=selecteDataId==0
+    console.log(currentElem);
+    console.log("currentElem");
+
+    this.LeftAnchor_DragAble_State.SetData(<PathData>currentElem, <PathData>prevElem);
+    // this.LeftAnchor_DragAble_State.nextDataObject = <PathData>prevElem;
+
+    this.RightAnchor_DragAble_State.SetData(<PathData>currentElem, <PathData>nextElem);
+    // this.RightAnchor_DragAble_State.nextDataObject = <PathData>nextElem;
+
+
+
+
+
     let leftAnc = document.getElementById("anchor__left");
     let rightAnc = document.getElementById("anchor__right");
 
@@ -306,6 +316,8 @@ export class ChartComponent implements OnInit, AfterViewInit {
 
     rightAnc.style.left = rightAnchorPoint.x.toString() + "px";
     rightAnc.style.top = rightAnchorPoint.y.toString() + "px";
+
+
   }
 
   private showDragAbleMarkers() {
