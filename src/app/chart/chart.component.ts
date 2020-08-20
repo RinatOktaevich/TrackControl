@@ -94,6 +94,7 @@ export class ChartComponent implements OnInit, AfterViewInit {
     leftAnc.style.display = "none";
     rightAnc.style.display = "none";
   }
+
   ngAfterViewInit() {
     this.canvas = document.getElementById("chart");
     this.canvas.addEventListener("click", this.hideAnchors.bind(this));
@@ -106,13 +107,10 @@ export class ChartComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit(): void {
-
     //cell config variables
     this.cellSize = this.canvasConfig.grid.cell.size;
-
     this.cellHalf = this.cellSize / 2;
     this.cellQuarter = this.cellSize / 4;
-
     this.cellSideDivider = this.canvasConfig.grid.cell.dividersLength.sides;
     this.cellCenterDivider = this.canvasConfig.grid.cell.dividersLength.center;
 
@@ -121,14 +119,21 @@ export class ChartComponent implements OnInit, AfterViewInit {
     this.rows = this.canvasConfig.grid.rows;
     //to make grid centered
     this.gridStartCoordinate = (this.canvasConfig.width - (this.cellSize * this.cols)) / 2;
-
     this.startPoint = new Point(this.gridStartCoordinate, 50);
-
     this.tempX = this.startPoint.x;
     this.tempY = this.startPoint.y;
-
     this.columnslineWidth = this.cellSize * this.cols;
     this.rowsLineHeight = this.cellSize * this.rows;
+    ////////////
+    let leftAnchor = document.getElementById("anchor__left");
+    let rightAnchor = document.getElementById("anchor__right");
+
+    // this.makeAnchorDragAble(<HTMLElement>leftAnchor.getElementsByClassName("marker")[0]);
+    // this.makeAnchorDragAble(<HTMLElement>rightAnchor.getElementsByClassName("marker")[0]);
+    this.makeAnchorDragAble(rightAnchor);
+    this.makeAnchorDragAble(rightAnchor);
+
+
 
   }
 
@@ -143,7 +148,7 @@ export class ChartComponent implements OnInit, AfterViewInit {
   private pathsViaHTML() {
 
     for (let index = 0; index < this.dataArr.length; index++) {
-      const element = this.dataArr[index];
+      const element: Data = this.dataArr[index];
 
       let x;
       let y;
@@ -177,7 +182,7 @@ export class ChartComponent implements OnInit, AfterViewInit {
       }
 
       let strokeWidth: number = this.timeToStrokeLength(element.timeInState);
-      this.createAndAppendPath(x, y, strokeWidth, fillColor, element.eventType);
+      this.createAndAppendPath(x, y, strokeWidth, fillColor, element.eventType, element.id);
 
       element["lineStroke"] = {
         startPoint: new Point(x, y),
@@ -215,6 +220,76 @@ export class ChartComponent implements OnInit, AfterViewInit {
     this.showAnchors(new Point(x1, y1), new Point(x2, y2), anchorHeight);
   }
 
+  private makeAnchorDragAble(elmnt: HTMLElement) {
+
+    var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+
+    elmnt.onmousedown = dragMouseDown;
+
+    // elem.addEventListener("mousedown", onMouseDown.bind(this));
+    // elem.addEventListener("mouseup", onMouseUp.bind(this));
+    // elem.addEventListener("mousemove", this.onMouseMove.bind(this));
+
+    function onMouseMove(event) {
+      event.preventDefault();
+      console.log("mouse move");
+      console.log(event);
+      console.log(event.clientX);
+
+      // elem.style.left = event.clientX + "px";
+      // let elem: HTMLElement = <HTMLElement>event.target;
+    }
+
+    function dragMouseDown(e) {
+      e = e || window.event;
+      e.preventDefault();
+      // get the mouse cursor position at startup:
+      pos3 = e.clientX;
+      pos4 = e.clientY;
+      document.onmouseup = closeDragElement;
+      // call a function whenever the cursor moves:
+      document.onmousemove = elementDrag;
+    }
+
+
+
+    function onMouseDown() {
+      console.log("mouse down");
+      // elem.onmousemove = onMouseMove;
+      // elem.addEventListener("mousemove", this.onMouseMove.bind(this));
+    }
+    function elementDrag(e) {
+      e = e || window.event;
+      e.preventDefault();
+      // calculate the new cursor position:
+      pos1 = pos3 - e.clientX;
+      // pos2 = pos4 - e.clientY;
+      pos3 = e.clientX;
+      // pos4 = e.clientY;
+      // set the element's new position:
+      // elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
+      elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
+    }
+
+
+
+    function onMouseUp() {
+      console.log("mouse up");
+      // elem.onmousemove = null;
+    }
+    function closeDragElement() {
+      // stop moving when mouse button is released:
+      document.onmouseup = null;
+      document.onmousemove = null;
+    }
+
+  }
+
+
+
+
+
+
 
   private showAnchors(leftAnchorPoint: Point, rightAnchorPoint: Point, height) {
     let leftAnc = document.getElementById("anchor__left");
@@ -241,10 +316,10 @@ export class ChartComponent implements OnInit, AfterViewInit {
 
   }
 
-  private createAndAppendPath(x, y, length, fillColor, eventType: EventType) {
+  private createAndAppendPath(x, y, length, fillColor, eventType: EventType, id: number) {
     let path = document.createElement("div");
 
-    path.id = this.generateId(3);
+    path.id = id.toString();
     path.classList.add("stroke", eventType.toString());
     path.style.position = "absolute";
     path.style.height = "7px";
@@ -454,16 +529,6 @@ export class ChartComponent implements OnInit, AfterViewInit {
 
   private timeToStrokeLength(time: Time): number {
     return (time.hours * this.cellSize) + (this.cellSize / 60 * time.minutes);
-  }
-
-  private generateId(length): string {
-    let result = '';
-    let characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
-    let charactersLength = characters.length;
-    for (let i = 0; i < length; i++) {
-      result += characters.charAt(Math.floor(Math.random() * charactersLength));
-    }
-    return result;
   }
 
 
