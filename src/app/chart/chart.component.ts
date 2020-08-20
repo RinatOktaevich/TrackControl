@@ -278,27 +278,25 @@ export class ChartComponent implements OnInit, AfterViewInit {
 
   private showAnchors(leftAnchorPoint: Point, rightAnchorPoint: Point, height, dataId: string) {
 
-    console.log("dataId");
-    console.log(dataId);
+    // console.log("dataId");
+    // console.log(dataId);
 
     let selecteDataIndex = this.dataArr.findIndex((elem: Data) => elem.id == dataId);
-    console.log("selecteDataIndex");
-    console.log(selecteDataIndex);
+    // console.log("selecteDataIndex");
+    // console.log(selecteDataIndex);
 
     const nextElem = selecteDataIndex + 1 < this.dataArr.length ? this.dataArr[selecteDataIndex + 1] : this.dataArr[selecteDataIndex];
     const prevElem = selecteDataIndex != 0 ? this.dataArr[selecteDataIndex - 1] : this.dataArr[selecteDataIndex];
     const currentElem = this.dataArr[selecteDataIndex];
     // selecteDataId=selecteDataId==0
-    console.log(currentElem);
-    console.log("currentElem");
+    // console.log(currentElem);
+    // console.log("currentElem");
 
     this.LeftAnchor_DragAble_State.SetData(<PathData>currentElem, <PathData>prevElem);
     // this.LeftAnchor_DragAble_State.nextDataObject = <PathData>prevElem;
 
     this.RightAnchor_DragAble_State.SetData(<PathData>currentElem, <PathData>nextElem);
     // this.RightAnchor_DragAble_State.nextDataObject = <PathData>nextElem;
-
-
 
 
 
@@ -316,14 +314,6 @@ export class ChartComponent implements OnInit, AfterViewInit {
 
     rightAnc.style.left = rightAnchorPoint.x.toString() + "px";
     rightAnc.style.top = rightAnchorPoint.y.toString() + "px";
-
-
-  }
-
-  private showDragAbleMarkers() {
-
-    let leftMark = document.getElementById("marker__left");
-    let rightMark = document.getElementById("marker__right");
 
 
   }
