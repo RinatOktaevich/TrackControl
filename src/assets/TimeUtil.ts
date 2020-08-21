@@ -42,6 +42,16 @@ export class TimeUtil {
         return new Time(hours, minutes);
     }
 
+    static minutesConvertToTime(mins: number) {
+
+        let hoursWithChange = (mins / 60);
+        let hours = Math.floor(hoursWithChange);
+        let minutesWithChange = (hoursWithChange - hours) * 60;
+        let minutes = Math.round(minutesWithChange);
+
+        return new Time(hours, minutes);
+    }
+
     static millisecondsConvertToTime(milliseconds: number) {
         let mins = milliseconds / 1000 / 60;
         let hoursWithChange = (mins / 60);
@@ -52,4 +62,12 @@ export class TimeUtil {
         return new Time(hours, minutes);
     }
 
+    static timeToStrokeLength(time: Time, oneHourPxSize: number): number {
+        return (time.hours * oneHourPxSize) + (oneHourPxSize / 60 * time.minutes);
+    }
+
+    static strokeLengthToTime(pixels: number): Time {
+        let minutes = (pixels / 45) * 60;
+        return this.minutesConvertToTime(minutes);
+    }
 }

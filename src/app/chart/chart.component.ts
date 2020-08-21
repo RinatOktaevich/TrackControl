@@ -9,6 +9,7 @@ import { DateUtil } from "./../../assets/DateUtil";
 import { ColorPalette } from "./../../assets/ColorPalette";
 import { DragAbleAnchor, LeftOrRight } from "./../../assets/DragAbleAnchor";
 import { PathData } from 'src/assets/Data';
+import { AnchorDraggedResponce } from 'src/assets/AnchorDraggedResponce';
 
 //*
 //*
@@ -38,6 +39,7 @@ export class ChartComponent implements OnInit, AfterViewInit {
 
   @Input() canvasConfig: any = null;
   @Input() dataArr: Data[] = [];
+  filteredArr: Data[] = [];
 
 
   LeftAnchor_DragAble_State: DragAbleAnchor;
@@ -112,6 +114,9 @@ export class ChartComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit(): void {
+
+    this.filteredArr = this.dataArr;
+
     //cell config variables
     this.cellSize = this.canvasConfig.grid.cell.size;
     this.cellHalf = this.cellSize / 2;
@@ -133,14 +138,11 @@ export class ChartComponent implements OnInit, AfterViewInit {
     let leftAnchor = document.getElementById("anchor__left");
     let rightAnchor = document.getElementById("anchor__right");
 
-    // this.makeAnchorDragAble(<HTMLElement>leftAnchor.getElementsByClassName("marker")[0]);
-    // this.makeAnchorDragAble(<HTMLElement>rightAnchor.getElementsByClassName("marker")[0]);
-
     this.LeftAnchor_DragAble_State = new DragAbleAnchor(leftAnchor, LeftOrRight.Left);
     this.RightAnchor_DragAble_State = new DragAbleAnchor(rightAnchor, LeftOrRight.Right);
 
-    // this.makeAnchorDragAble(leftAnchor);
-    // this.makeAnchorDragAble(rightAnchor);
+    this.LeftAnchor_DragAble_State.SubscribeOnDrag(this.OnAnchorDragged.bind(this));
+    this.RightAnchor_DragAble_State.SubscribeOnDrag(this.OnAnchorDragged.bind(this));
 
   }
 
@@ -152,18 +154,42 @@ export class ChartComponent implements OnInit, AfterViewInit {
   }
 
 
+  private OnAnchorDragged(data: AnchorDraggedResponce) {
+
+    console.log("data");
+    console.log(data);
+
+  }
+
+
+
+
+  // private filterData() {
+  //   this.filteredArr
+  // }
+
+
+
+
+
+
+
+
+
+
+
   private pathsViaHTML() {
 
-    for (let index = 0; index < this.dataArr.length; index++) {
-      const element: Data = this.dataArr[index];
+    for (let index = 0; index < this.filteredArr.length; index++) {
+      const element: Data = this.filteredArr[index];
 
       let x;
       let y;
       let fillColor;
       if (index == 0) {
-        x = this.tempX + this.timeToStrokeLength(new Time(element.date.getHours(), element.date.getMinutes()));
+        x = this.tempX + TimeUtil.timeToStrokeLength(new Time(element.date.getHours(), element.date.getMinutes()), this.cellSize);
       } else {
-        x = this.dataArr[index - 1].lineStroke.endPoint.x;
+        x = this.filteredArr[index - 1].lineStroke.endPoint.x;
       }
 
       switch (element.eventType) {
@@ -188,7 +214,7 @@ export class ChartComponent implements OnInit, AfterViewInit {
           break;
       }
 
-      let strokeWidth: number = this.timeToStrokeLength(element.timeInState);
+      let strokeWidth: number = TimeUtil.timeToStrokeLength(element.timeInState, this.cellSize);
       this.createAndAppendPath(x, y, strokeWidth, fillColor, element.eventType, element.id);
 
       element["lineStroke"] = {
@@ -229,76 +255,17 @@ export class ChartComponent implements OnInit, AfterViewInit {
     this.showAnchors(new Point(x1, y1), new Point(x2, y2), anchorHeight, dataId);
   }
 
-  // private makeAnchorDragAble(elmnt: HTMLElement) {
-  //   var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
-  //   elmnt.onmousedown = onMouseDown.bind(this);
-
-  //   // function onMouseDown(e) {
-  //   //   e = e || window.event;
-  //   //   e.preventDefault();
-  //   //   // get the mouse cursor position at startup:
-  //   //   pos3 = e.clientX;
-  //   //   pos4 = e.clientY;
-  //   //   document.onmouseup = onMouseUp.bind(this);
-  //   //   // call a function whenever the cursor moves:
-  //   //   document.onmousemove = onMouseMove.bind(this);
-  //   // }
-
-  //   // function onMouseMove(e) {
-  //   //   e = e || window.event;
-  //   //   e.preventDefault();
-  //   //   // calculate the new cursor position:
-  //   //   pos1 = pos3 - e.clientX;
-  //   //   // pos2 = pos4 - e.clientY;
-  //   //   pos3 = e.clientX;
-  //   //   // pos4 = e.clientY;
-  //   //   // set the element's new position:
-  //   //   // elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
-
-  //   //   // console.log((elmnt.offsetLeft - pos1) + "px");
-  //   //   if ((elmnt.offsetLeft - pos1) <= 612-7) {
-  //   //     elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
-  //   //   }
-
-  //   // }
-
-  //   // function onMouseUp() {
-  //   //   // stop moving when mouse button is released:
-  //   //   document.onmouseup = null;
-  //   //   document.onmousemove = null;
-  //   // }
-
-  // }
-
-
-
-
-
-
 
   private showAnchors(leftAnchorPoint: Point, rightAnchorPoint: Point, height, dataId: string) {
 
-    // console.log("dataId");
-    // console.log(dataId);
+    let selecteDataIndex = this.filteredArr.findIndex((elem: Data) => elem.id == dataId);
 
-    let selecteDataIndex = this.dataArr.findIndex((elem: Data) => elem.id == dataId);
-    // console.log("selecteDataIndex");
-    // console.log(selecteDataIndex);
-
-    const nextElem = selecteDataIndex + 1 < this.dataArr.length ? this.dataArr[selecteDataIndex + 1] : this.dataArr[selecteDataIndex];
-    const prevElem = selecteDataIndex != 0 ? this.dataArr[selecteDataIndex - 1] : this.dataArr[selecteDataIndex];
-    const currentElem = this.dataArr[selecteDataIndex];
-    // selecteDataId=selecteDataId==0
-    // console.log(currentElem);
-    // console.log("currentElem");
+    const nextElem = selecteDataIndex + 1 < this.filteredArr.length ? this.filteredArr[selecteDataIndex + 1] : this.filteredArr[selecteDataIndex];
+    const prevElem = selecteDataIndex != 0 ? this.filteredArr[selecteDataIndex - 1] : this.filteredArr[selecteDataIndex];
+    const currentElem = this.filteredArr[selecteDataIndex];
 
     this.LeftAnchor_DragAble_State.SetData(<PathData>currentElem, <PathData>prevElem);
-    // this.LeftAnchor_DragAble_State.nextDataObject = <PathData>prevElem;
-
     this.RightAnchor_DragAble_State.SetData(<PathData>currentElem, <PathData>nextElem);
-    // this.RightAnchor_DragAble_State.nextDataObject = <PathData>nextElem;
-
-
 
     let leftAnc = document.getElementById("anchor__left");
     let rightAnc = document.getElementById("anchor__right");
@@ -372,17 +339,14 @@ export class ChartComponent implements OnInit, AfterViewInit {
     this.TimedurationPerState();
   }
 
-
-
   private drawCurrentDate() {
-    let date: Date = this.dataArr[0].date;
+    let date: Date = this.filteredArr[0].date;
     let currentDate: string = DateUtil.DateConverter(date);
 
     this.ctx.font = "20px sans-serif";
     this.ctx.fillStyle = "#000";
     this.ctx.fillText(currentDate, this.tempX + (this.cellSize * 10), this.tempY - 30);
   }
-
 
   private TimedurationPerState() {
 
@@ -419,14 +383,14 @@ export class ChartComponent implements OnInit, AfterViewInit {
 
 
   private calculateTimeDurations(timeDurations) {
-    let endOfTheDay: Date = new Date(this.dataArr[0].date.toUTCString());
+    let endOfTheDay: Date = new Date(this.filteredArr[0].date.toUTCString());
     endOfTheDay.setHours(23);
     endOfTheDay.setMinutes(59);
     endOfTheDay.setSeconds(59);
 
-    for (let index = 0; index < this.dataArr.length; index++) {
-      const element: Data = this.dataArr[index];
-      const nextElem = index + 1 < this.dataArr.length ? this.dataArr[index + 1] : null;
+    for (let index = 0; index < this.filteredArr.length; index++) {
+      const element: Data = this.filteredArr[index];
+      const nextElem = index + 1 < this.filteredArr.length ? this.filteredArr[index + 1] : null;
 
       let diffTime: Time = nextElem != null ? TimeUtil.differDates(nextElem.date, element.date) : TimeUtil.differDates(endOfTheDay, element.date);
       element["timeInState"] = diffTime;
@@ -528,11 +492,6 @@ export class ChartComponent implements OnInit, AfterViewInit {
     this.ctx.stroke();
     this.ctx.closePath();
   }
-
-  private timeToStrokeLength(time: Time): number {
-    return (time.hours * this.cellSize) + (this.cellSize / 60 * time.minutes);
-  }
-
 
   private EventTypeToColorPalette(type: string): ColorPalette {
 

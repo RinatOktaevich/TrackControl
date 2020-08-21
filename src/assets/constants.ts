@@ -34,7 +34,7 @@ export const dataArr: Data[] =
         //stared to work
         new Data(new Date(2020, 8, 15, 7, 51), 25, 35, EventType.OnDuty),
         //started to drive
-        new Data(new Date(2020, 8, 15, 8, 20), 25, 35, EventType.Driving),
+        new Data(new Date(2020, 8, 15, 8, 30), 25, 35, EventType.Driving),
         //stoped for some business
         new Data(new Date(2020, 8, 15, 12, 15), 25, 35, EventType.OnDuty),
         //lunch
