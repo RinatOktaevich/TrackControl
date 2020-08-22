@@ -43,8 +43,9 @@ export class ChartComponent implements OnInit, AfterViewInit {
   filteredArr: Data[] = [];
 
 
-  LeftAnchor_DragAble_State: DragAbleAnchor;
-  RightAnchor_DragAble_State: DragAbleAnchor;
+  private LeftAnchor_DragAble_State: DragAbleAnchor;
+  private RightAnchor_DragAble_State: DragAbleAnchor;
+  private wasDragged = false;
 
 
   //cell config variables
@@ -176,6 +177,10 @@ export class ChartComponent implements OnInit, AfterViewInit {
 
   private OnAnchorDragged(_data: AnchorDraggedResponce) {
 
+    if (this.wasDragged == false) {
+      this.wasDragged = true;
+    }
+
     let changedIndex = this.filteredArr.findIndex(v => v.id == _data.data.id);
     this.filteredArr[changedIndex].date.setHours(_data.newTime.hours);
     this.filteredArr[changedIndex].date.setMinutes(_data.newTime.minutes);
@@ -239,15 +244,24 @@ export class ChartComponent implements OnInit, AfterViewInit {
       let strokeWidth: number = TimeUtil.timeToStrokeLength(element.timeInState, this.cellSize);
       this.createAndAppendPath(x, y, strokeWidth, fillColor, element.eventType, element.id);
 
-      element["lineStroke"] = {
+      let lineStroke = {
         startPoint: new Point(x, y),
         endPoint: new Point(x + strokeWidth, y)
       };
+
+      this.dataArr[index]["lineStroke"] = lineStroke;
+      element["lineStroke"] = lineStroke;
 
     }
   }
 
   private pathSelected(event) {
+    if (this.wasDragged) {
+      this.filteredArr = cloneDeep(this.dataArr);
+      this.update();
+    }
+
+
     let elem: HTMLElement = <HTMLElement>event.target;
 
     elem.style.backgroundColor = this.EventTypeToColorPalette(elem.classList[1]).mainColor;
