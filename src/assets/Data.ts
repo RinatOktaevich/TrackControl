@@ -15,6 +15,8 @@ export class Data {
         this.lng = _lng;
         this.eventType = _eventType;
     }
+
+   
 }
 
 
@@ -23,7 +25,7 @@ export class PathData extends Data {
 
 }
 
-class LineStroke {
+export class LineStroke {
     startPoint: Point;
     endPoint: Point;
 }

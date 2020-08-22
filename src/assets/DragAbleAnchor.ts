@@ -80,7 +80,8 @@ export class DragAbleAnchor {
             let newTime = this.newTimeForData(usedData, newPos);
             let AnchorResponce: AnchorDraggedResponce = {
                 data: usedData,
-                newTime: newTime
+                newTime: newTime,
+                nextData: this.nextDataObject
             };
             this.AnchorDragged$.next(AnchorResponce);
         }

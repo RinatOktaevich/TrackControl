@@ -3,5 +3,6 @@ import { Time } from './Time';
 
 export interface AnchorDraggedResponce {
     newTime:Time;
-    data: PathData
+    data: PathData;
+    nextData:PathData;
 }
