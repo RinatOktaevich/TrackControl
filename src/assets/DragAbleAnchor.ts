@@ -1,6 +1,6 @@
 import { PathData } from "./Data"
 import { fromEvent, Observable, Subject } from 'rxjs'
-import { takeUntil, switchMap, map } from 'rxjs/operators'
+import { takeUntil, switchMap, map, tap } from 'rxjs/operators'
 import { Time } from './Time';
 import { TimeUtil } from './TimeUtil'
 import { AnchorDraggedResponce } from "./AnchorDraggedResponce";
@@ -12,7 +12,7 @@ export class DragAbleAnchor {
     private anchorBlockOffset = 7;
     private xPos1: number;
     private xPos2: number;
-    private element: HTMLElement;
+    private anchor: HTMLElement;
     private dataObject: PathData;
     private nextDataObject: PathData;
     private isInPlace;
@@ -26,21 +26,19 @@ export class DragAbleAnchor {
     private AnchorDragged$: Subject<AnchorDraggedResponce> = new Subject<AnchorDraggedResponce>();
 
 
-    constructor(_element: HTMLElement, _side: LeftOrRight) {
-        this.element = _element;
+    constructor(_anchorElement: HTMLElement, _side: LeftOrRight) {
+        this.anchor = _anchorElement;
         this.side = _side;
         this.isInPlace = _side == LeftOrRight.Left ? this.leftBorderCheck : this.rightBorderCheck;
 
-        this.mouseDown$ = fromEvent(this.element, 'mousedown');
+        this.mouseDown$ = fromEvent(this.anchor, 'mousedown');
         this.mouseMove$ = fromEvent(document, 'mousemove');
         this.mouseUp$ = fromEvent(window, 'mouseup');
 
         this.stream$ = this.mouseDown$
             .pipe(
-                map((e: any) => {
+                tap((e: any) => {
                     this.xPos2 = e.clientX;
-
-                    return e;
                 }
                 ),
                 switchMap(() => {
@@ -65,19 +63,26 @@ export class DragAbleAnchor {
         this.nextDataObject = cloneDeep(_nextData);
     }
 
+
+
+
+
+
+
+
     private onMouseMove(e) {
         this.xPos1 = this.xPos2 - e.clientX;
         this.xPos2 = e.clientX;
-        let elementPos = (this.element.offsetLeft - this.xPos1);
+        let anchorPos = (this.anchor.offsetLeft - this.xPos1);
 
 
-        if (this.isInPlace(elementPos)) {
-            this.element.style.left = (elementPos) + "px";
+        if (this.isInPlace(anchorPos)) {
+            this.anchor.style.left = (anchorPos) + "px";
 
             let usedData = this.side == LeftOrRight.Left ? this.dataObject : this.nextDataObject;
-            let newPos = elementPos + this.anchorBlockOffset;
+            let newAnchorPos = anchorPos + this.anchorBlockOffset;
 
-            let newTime = this.newTimeForData(usedData, newPos);
+            let newTime = this.newTimeForData(usedData, newAnchorPos);
             let AnchorResponce: AnchorDraggedResponce = {
                 data: usedData,
                 newTime: newTime,
@@ -105,7 +110,20 @@ export class DragAbleAnchor {
     }
 
 
+
+
+
+
+
+
+
+
     private leftBorderCheck(xPos: number): boolean {
+        if (this.nextDataObject.lineStroke == undefined || this.nextDataObject.lineStroke.startPoint == undefined || this.nextDataObject.lineStroke.endPoint == undefined) {
+            console.log(this);
+        }
+
+
         if ((xPos + this.anchorBlockOffset) >= this.nextDataObject.lineStroke.startPoint.x
             &&
             (xPos - this.anchorBlockOffset) < this.dataObject.lineStroke.endPoint.x) {

@@ -71,11 +71,9 @@ export class TimeUtil {
         return this.minutesConvertToTime(minutes);
     }
 
-
     static dateToTime(date: Date) {
         return new Time(date.getHours(), date.getMinutes());
     }
-
 
     static differTimes(bigger: Time, less: Time): Time {
         let biggerInseconds = (bigger.hours * 60 * 60) + (bigger.minutes * 60);
