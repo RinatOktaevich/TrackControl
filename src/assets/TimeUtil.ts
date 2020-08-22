@@ -70,4 +70,18 @@ export class TimeUtil {
         let minutes = (pixels / 45) * 60;
         return this.minutesConvertToTime(minutes);
     }
+
+
+    static dateToTime(date: Date) {
+        return new Time(date.getHours(), date.getMinutes());
+    }
+
+
+    static differTimes(bigger: Time, less: Time): Time {
+        let biggerInseconds = (bigger.hours * 60 * 60) + (bigger.minutes * 60);
+        let lessInseconds = (less.hours * 60 * 60) + (less.minutes * 60);
+        let diffInSeconds = biggerInseconds - lessInseconds;
+
+        return TimeUtil.secondsConvertToTime(diffInSeconds);
+    }
 }

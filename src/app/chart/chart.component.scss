@@ -17,6 +17,27 @@ canvas {
             left: 200px;
         }
     }
+    & .timePerState {
+        position: absolute;
+        font-size: 21px;
+        left: 1150px;
+        &.offDuty {
+            top: 67px;
+            color: #AA4E44;
+        }
+        &.sleeper {
+            top: 112px;
+            color: #303F4B;
+        }
+        &.drive {
+            top: 157px;
+            color: #627C5F;
+        }
+        &.onDuty {
+            top: 202px;
+            color: #D27D2A;
+        }
+    }
     & .anchor {
         display: flex;
         flex-direction: column;

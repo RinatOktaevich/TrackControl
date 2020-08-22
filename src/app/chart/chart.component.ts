@@ -10,6 +10,7 @@ import { ColorPalette } from "./../../assets/ColorPalette";
 import { DragAbleAnchor, LeftOrRight } from "./../../assets/DragAbleAnchor";
 import { PathData } from 'src/assets/Data';
 import { AnchorDraggedResponce } from 'src/assets/AnchorDraggedResponce';
+import { cloneDeep } from "lodash"
 
 //*
 //*
@@ -82,6 +83,20 @@ export class ChartComponent implements OnInit, AfterViewInit {
   private onDutyColorDim = "rgba(242, 190, 68, 0.5)";
   ////////////
 
+  timeDurations = {
+    offDutyTimeDur: new Time(0, 0),
+    sbTimeDur: new Time(0, 0),
+    onDutyTimeDur: new Time(0, 0),
+    driveTimeDur: new Time(0, 0),
+    reset: function () {
+      this.offDutyTimeDur = new Time(0, 0);
+      this.sbTimeDur = new Time(0, 0);
+      this.onDutyTimeDur = new Time(0, 0);
+      this.driveTimeDur = new Time(0, 0);
+    }
+  };
+
+
 
   constructor() {
   }
@@ -102,9 +117,15 @@ export class ChartComponent implements OnInit, AfterViewInit {
     rightAnc.style.display = "none";
   }
 
+  private canvasOnClick() {
+    this.hideAnchors();
+    this.filteredArr = cloneDeep(this.dataArr);
+    this.update();
+  }
+
   ngAfterViewInit() {
     this.canvas = document.getElementById("chart");
-    this.canvas.addEventListener("click", this.hideAnchors.bind(this));
+    this.canvas.addEventListener("click", this.canvasOnClick.bind(this));
 
     this.ctx = this.canvas.getContext('2d');
 
@@ -114,8 +135,7 @@ export class ChartComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit(): void {
-
-    this.filteredArr = this.dataArr;
+    this.filteredArr = cloneDeep(this.dataArr);
 
     //cell config variables
     this.cellSize = this.canvasConfig.grid.cell.size;
@@ -154,11 +174,13 @@ export class ChartComponent implements OnInit, AfterViewInit {
   }
 
 
-  private OnAnchorDragged(data: AnchorDraggedResponce) {
+  private OnAnchorDragged(_data: AnchorDraggedResponce) {
 
-    console.log("data");
-    console.log(data);
+    let changedIndex = this.filteredArr.findIndex(v => v.id == _data.data.id);
+    this.filteredArr[changedIndex].date.setHours(_data.newTime.hours);
+    this.filteredArr[changedIndex].date.setMinutes(_data.newTime.minutes);
 
+    this.update();
   }
 
 
@@ -330,7 +352,9 @@ export class ChartComponent implements OnInit, AfterViewInit {
     }
   }
 
-
+  private update() {
+    this.calculateTimeDurations(this.timeDurations);
+  }
 
   private text() {
     this.drawCurrentDate();
@@ -350,39 +374,44 @@ export class ChartComponent implements OnInit, AfterViewInit {
 
   private TimedurationPerState() {
 
-    let timeDurations = {
-      offDutyTimeDur: new Time(0, 0),
-      sbTimeDur: new Time(0, 0),
-      onDutyTimeDur: new Time(0, 0),
-      driveTimeDur: new Time(0, 0)
-    };
+    // let timeDurations = {
+    //   offDutyTimeDur: new Time(0, 0),
+    //   sbTimeDur: new Time(0, 0),
+    //   onDutyTimeDur: new Time(0, 0),
+    //   driveTimeDur: new Time(0, 0)
+    // };
 
-    this.calculateTimeDurations(timeDurations);
-    this.drawTimeDurations(timeDurations);
+    this.calculateTimeDurations(this.timeDurations);
+    // this.drawTimeDurations(this.timeDurations);
 
   }
 
-  private drawTimeDurations(timeDurations) {
-    this.ctx.font = "18px sans-serif";
-    //OFF
-    this.ctx.fillStyle = "#AA4E44";
-    this.ctx.fillText(timeDurations.offDutyTimeDur, this.tempX + (this.cols * this.cellSize) + 10, this.tempY + this.cellHalf + 3);
+  // private drawTimeDurations(timeDurations) {
+  //   this.ctx.font = "18px sans-serif";
+  //   //OFF
+  //   // this.ctx.fillStyle = "#AA4E44";
+  //   // this.ctx.fillText(timeDurations.offDutyTimeDur, this.tempX + (this.cols * this.cellSize) + 10, this.tempY + this.cellHalf + 3);
 
-    //SB
-    this.ctx.fillStyle = "#303F4B";
-    this.ctx.fillText(timeDurations.sbTimeDur, this.tempX + (this.cols * this.cellSize) + 10, this.tempY + (this.cellSize + this.cellHalf) + 3);
+  //   //SB
+  //   this.ctx.fillStyle = "#303F4B";
+  //   console.log("SB coordinates");
 
-    //D
-    this.ctx.fillStyle = "#627C5F";
-    this.ctx.fillText(timeDurations.driveTimeDur, this.tempX + (this.cols * this.cellSize) + 10, this.tempY + (this.cellSize * 2 + this.cellHalf) + 3);
+  //   console.log("x:" + (this.tempX + (this.cols * this.cellSize) + 10) + "    Y: "+ (this.tempY + (this.cellSize + this.cellHalf) + 3));
 
-    //ON
-    this.ctx.fillStyle = "#D27D2A";
-    this.ctx.fillText(timeDurations.onDutyTimeDur, this.tempX + (this.cols * this.cellSize) + 10, this.tempY + (this.cellSize * 3 + this.cellHalf) + 3);
-  }
+  //   // this.ctx.fillText(timeDurations.sbTimeDur, this.tempX + (this.cols * this.cellSize) + 10, this.tempY + (this.cellSize + this.cellHalf) + 3);
+
+  //   //D
+  //   this.ctx.fillStyle = "#627C5F";
+  //   // this.ctx.fillText(timeDurations.driveTimeDur, this.tempX + (this.cols * this.cellSize) + 10, this.tempY + (this.cellSize * 2 + this.cellHalf) + 3);
+
+  //   //ON
+  //   this.ctx.fillStyle = "#D27D2A";
+  //   // this.ctx.fillText(timeDurations.onDutyTimeDur, this.tempX + (this.cols * this.cellSize) + 10, this.tempY + (this.cellSize * 3 + this.cellHalf) + 3);
+  // }
 
 
   private calculateTimeDurations(timeDurations) {
+    timeDurations.reset();
     let endOfTheDay: Date = new Date(this.filteredArr[0].date.toUTCString());
     endOfTheDay.setHours(23);
     endOfTheDay.setMinutes(59);

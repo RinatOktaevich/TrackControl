@@ -4,6 +4,8 @@ import { takeUntil, switchMap, map } from 'rxjs/operators'
 import { Time } from './Time';
 import { TimeUtil } from './TimeUtil'
 import { AnchorDraggedResponce } from "./AnchorDraggedResponce";
+import { cloneDeep } from "lodash"
+
 
 export class DragAbleAnchor {
     //private
@@ -59,14 +61,15 @@ export class DragAbleAnchor {
 
 
     SetData(_data: PathData, _nextData: PathData) {
-        this.dataObject = _data;
-        this.nextDataObject = _nextData;
+        this.dataObject = cloneDeep(_data);
+        this.nextDataObject = cloneDeep(_nextData);
     }
 
     private onMouseMove(e) {
         this.xPos1 = this.xPos2 - e.clientX;
         this.xPos2 = e.clientX;
         let elementPos = (this.element.offsetLeft - this.xPos1);
+
 
         if (this.isInPlace(elementPos)) {
             this.element.style.left = (elementPos) + "px";
@@ -86,13 +89,18 @@ export class DragAbleAnchor {
     private newTimeForData(data: PathData, newXPos: number): Time {
         let oldPos = data.lineStroke.startPoint.x;
         let diffInPX: number;
+        let newTime: Time;
         if (newXPos > oldPos) {
             diffInPX = newXPos - oldPos;
+            let diffInTime = TimeUtil.strokeLengthToTime(diffInPX);
+            newTime = TimeUtil.sumUpTimes(TimeUtil.dateToTime(data.date), diffInTime);
 
         } else {
             diffInPX = oldPos - newXPos;
+            let diffInTime = TimeUtil.strokeLengthToTime(diffInPX);
+            newTime = TimeUtil.differTimes(TimeUtil.dateToTime(data.date), diffInTime);
         }
-        return TimeUtil.strokeLengthToTime(diffInPX);
+        return newTime;
     }
 
 

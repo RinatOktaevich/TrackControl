@@ -4,10 +4,10 @@ import { Point } from './Point';
 export class Data {
     id: string;
     [x: string]: any;
-    date;
-    lat;
-    lng;
-    eventType;
+    date: Date;
+    lat: number;
+    lng: number;
+    eventType: EventType;
 
     constructor(_date: Date, _lat: number, _lng: number, _eventType: EventType) {
         this.date = _date;
