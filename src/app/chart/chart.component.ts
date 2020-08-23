@@ -10,19 +10,8 @@ import { DragAbleAnchor, LeftOrRight } from "./../../assets/DragAbleAnchor";
 import { PathData, Data } from 'src/assets/Data';
 import { AnchorDraggedResponce } from 'src/assets/AnchorDraggedResponce';
 import { cloneDeep } from "lodash"
-import { LineStroke } from "./../../assets/Data";
+import { CalculationParams } from "./../../assets/CalculationParams";
 
-//*
-//*
-//*
-//Dynamic props in Data object added here in this component
-//@timeInState - represent the time from the begining of an event to the next event
-//@lineStroke - 
-//----startPoint:Point
-//----endPoint:Point
-//*
-//*
-//*
 
 @Component({
   selector: 'app-chart',
@@ -95,8 +84,6 @@ export class ChartComponent implements OnInit, AfterViewInit, OnChanges {
 
 
   ngOnInit(): void {
-    // this.filteredArr = cloneDeep(this.dataArr);
-
     //cell config variables
     this.cellSize = this.canvasConfig.grid.cell.size;
     this.cellHalf = this.cellSize / 2;
@@ -117,13 +104,10 @@ export class ChartComponent implements OnInit, AfterViewInit, OnChanges {
     ////////////
     let leftAnchor = document.getElementById("anchor__left");
     let rightAnchor = document.getElementById("anchor__right");
-
     this.LeftAnchor_DragAble_State = new DragAbleAnchor(leftAnchor, LeftOrRight.Left);
     this.RightAnchor_DragAble_State = new DragAbleAnchor(rightAnchor, LeftOrRight.Right);
-
     this.LeftAnchor_DragAble_State.SubscribeOnDrag(this.OnAnchorDragged.bind(this));
     this.RightAnchor_DragAble_State.SubscribeOnDrag(this.OnAnchorDragged.bind(this));
-
   }
 
   ngOnChanges(changes) {
@@ -177,22 +161,17 @@ export class ChartComponent implements OnInit, AfterViewInit, OnChanges {
     this.calculateTimeDurations(this.timeDurations);
     this.updatePaths();
     let sd = this.filteredArr;
-    // this.calculateCreateAndAddPathsViaHTML();
   }
 
   // First head of an event 
   private OnAnchorDragged(_data: AnchorDraggedResponce) {
-
     if (this.wasDragged == false) {
       this.wasDragged = true;
     }
 
-    // let changedIndex = this.filteredArr.findIndex(v => v.id == _data.data.id);
     let changedElem = this.getById(_data.data.id);
     changedElem.date.setHours(_data.newTime.hours);
     changedElem.date.setMinutes(_data.newTime.minutes);
-
-    // this.updateOnAnchorDrag(_data);
 
     this.calculateTimeDurations(this.timeDurations);
     this.updatePaths();
@@ -205,9 +184,7 @@ export class ChartComponent implements OnInit, AfterViewInit, OnChanges {
       this.updatePaths();
     }
 
-
     let elem: HTMLElement = <HTMLElement>event.target;
-
     elem.style.backgroundColor = this.EventTypeToColorPalette(elem.classList[1]).mainColor;
     let otherElements = document.querySelectorAll(`.stroke:not(#${elem.id})`);
 
@@ -241,21 +218,16 @@ export class ChartComponent implements OnInit, AfterViewInit, OnChanges {
 
 
   private updatePaths() {
-
     for (let index = 0; index < this.filteredArr.length; index++) {
       const element: PathData = this.filteredArr[index];
-
       let params: CalculationParams = new CalculationParams();
-
       this.calculatePathViaHTML(params, element);
-
       this.updatePathPositions(params, element);
     }
   }
 
   private updatePathPositions(params: CalculationParams, element: PathData) {
     let div: HTMLElement = <HTMLElement>document.getElementById(element.id);
-
     div.style.left = params.x + "px";
     div.style.width = params.strokeWidth + "px";
   }
@@ -279,16 +251,6 @@ export class ChartComponent implements OnInit, AfterViewInit, OnChanges {
   private calculateCreateAndAddPathsViaHTML() {
     for (let index = 0; index < this.filteredArr.length; index++) {
       const element: PathData = this.filteredArr[index];
-
-      // let params: CalculationParams = {
-      //   id: null,
-      //   x: 0,
-      //   y: 0,
-      //   strokeWidth: 0,
-      //   fillColor: "",
-      //   eventType: null,
-      //   lineStroke: null,
-      // };
       let params = new CalculationParams();
       this.calculatePathViaHTML(params, element);
 
@@ -299,7 +261,6 @@ export class ChartComponent implements OnInit, AfterViewInit, OnChanges {
   }
 
   private showAnchors(leftAnchorPoint: Point, rightAnchorPoint: Point, height, dataId: string) {
-
     let selecteDataIndex = this.indexes.indexOf(dataId);
 
     const nextElem = selecteDataIndex + 1 < this.filteredArr.length ? this.filteredArr[selecteDataIndex + 1] : this.filteredArr[selecteDataIndex];
@@ -314,17 +275,12 @@ export class ChartComponent implements OnInit, AfterViewInit, OnChanges {
 
     leftAnc.style.display = "block";
     rightAnc.style.display = "block";
-
     leftAnc.style.height = `${height}px`;
     rightAnc.style.height = `${height}px`;
-
     leftAnc.style.left = leftAnchorPoint.x.toString() + "px";
     leftAnc.style.top = leftAnchorPoint.y.toString() + "px";
-
     rightAnc.style.left = rightAnchorPoint.x.toString() + "px";
     rightAnc.style.top = rightAnchorPoint.y.toString() + "px";
-
-
   }
 
   private createAndAppendPath(x, y, length, fillColor, eventType: EventType, id: string) {
@@ -344,76 +300,6 @@ export class ChartComponent implements OnInit, AfterViewInit, OnChanges {
 
     this.canvasWrap.appendChild(path);
   }
-
-  // private setNewPathCoordinates(params: CalculationParams) {
-  //   // console.log(params.id);
-
-  //   let elem: any = <HTMLElement>document.getElementById(params.id);
-  //   // console.log("params.lineStroke.startPoint");
-  //   // console.log(params.lineStroke.startPoint);
-  //   // console.log("params.strokeWidth");
-  //   // console.log(params.strokeWidth);
-
-
-
-  //   elem.style.left = params.lineStroke.startPoint + "px";
-  //   elem.style.width = params.strokeWidth + "px";
-  // }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  // private updateOnAnchorDrag(_data: AnchorDraggedResponce) {
-  //   let elemIndex = this.filteredArr.findIndex((v: PathData) => v.id == _data.data.id);
-  //   let changedElem = this.filteredArr[elemIndex];
-
-  //   changedElem.date.setHours(_data.newTime.hours);
-  //   changedElem.date.setMinutes(_data.newTime.minutes);
-
-
-  //   this.calculateTimeDurations(this.timeDurations);
-  //   // this.updateTwoPaths(_data);
-  // }
-
-
-  // private updateTwoPaths(_data: AnchorDraggedResponce) {
-  //   let index = this.filteredArr.findIndex(v => v.id == _data.data.id);
-
-  //   let one: PathData = this.filteredArr[index];
-
-  //   one.date.setMinutes(_data.newTime.minutes);
-  //   one.date.setHours(_data.newTime.hours);
-
-
-  //   index = this.filteredArr.findIndex(v => v.id == _data.nextData.id);
-  //   let two = this.filteredArr[index];
-
-  //   let params1 = new CalculationParams();
-  //   params1.id = one.id;
-  //   let params2 = new CalculationParams();
-  //   params2.id = two.id;
-
-  //   this.calculatePathViaHTML(params1, one);
-  //   this.calculatePathViaHTML(params2, two);
-
-  //   this.setNewPathCoordinates(params1);
-  //   this.setNewPathCoordinates(params2);
-
-  // }
-
-
 
 
 
@@ -484,17 +370,14 @@ export class ChartComponent implements OnInit, AfterViewInit, OnChanges {
       case EventType.OffDuty:
         params.fillColor = this.offDutyColor;
         params.y = this.tempY + this.cellHalf;
-
         break;
       case EventType.OnDuty:
         params.fillColor = this.onDutyColor;
         params.y = this.tempY + this.cellSize * 3 + this.cellHalf;
-
         break;
       case EventType.SleeperBerth:
         params.fillColor = this.sleeperBerthColor;
         params.y = this.tempY + this.cellSize + this.cellHalf;
-
         break;
     }
 
@@ -505,10 +388,6 @@ export class ChartComponent implements OnInit, AfterViewInit, OnChanges {
     };
 
     element.lineStroke = params.lineStroke;
-
-    // console.log("line stroke");
-    // console.log(element["lineStroke"]);
-
   }
 
   /////////// CALCULATIONS-------------------////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -666,7 +545,6 @@ export class ChartComponent implements OnInit, AfterViewInit, OnChanges {
 
   private hideAnchors() {
     let strokes = document.getElementsByClassName("stroke");
-
     for (let index = 0; index < strokes.length; index++) {
       const element: HTMLElement = <HTMLElement>strokes[index];
       element.style.backgroundColor = this.EventTypeToColorPalette(element.classList[1]).mainColor;
@@ -674,7 +552,6 @@ export class ChartComponent implements OnInit, AfterViewInit, OnChanges {
 
     let leftAnc = document.getElementById("anchor__left");
     let rightAnc = document.getElementById("anchor__right");
-
     leftAnc.style.display = "none";
     rightAnc.style.display = "none";
   }
@@ -747,16 +624,4 @@ export class ChartComponent implements OnInit, AfterViewInit, OnChanges {
 
     return +res;
   }
-}
-
-
-
-class CalculationParams {
-  id: string;
-  x: number;
-  y: number;
-  strokeWidth: number;
-  fillColor: string;
-  eventType: EventType;
-  lineStroke: LineStroke;
 }

@@ -1,5 +1,5 @@
 import { EventType } from "./EventType";
-import { Point } from './Point';
+import { LineStroke } from './LineStroke';
 
 export class Data {
     id: string;
@@ -15,17 +15,9 @@ export class Data {
         this.lng = _lng;
         this.eventType = _eventType;
     }
-
-   
 }
 
 
 export class PathData extends Data {
     lineStroke: LineStroke;
-
-}
-
-export class LineStroke {
-    startPoint: Point;
-    endPoint: Point;
 }

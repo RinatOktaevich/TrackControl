@@ -21,6 +21,7 @@ canvas {
         position: absolute;
         font-size: 21px;
         left: 1150px;
+        user-select: none;
         &.offDuty {
             top: 67px;
             color: #AA4E44;
