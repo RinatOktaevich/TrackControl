@@ -1,7 +1,7 @@
 import { EventType } from "./EventType";
 import { LineStroke } from './LineStroke';
 
-export class Data {
+export class Event {
     id: string;
     [x: string]: any;
     date: Date;
@@ -18,6 +18,6 @@ export class Data {
 }
 
 
-export class PathData extends Data {
+export class EventPath extends Event {
     lineStroke: LineStroke;
 }

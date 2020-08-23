@@ -1,8 +1,8 @@
-import { PathData } from "./Data";
+import { EventPath } from "./Event";
 import { Time } from './Time';
 
 export interface AnchorDraggedResponce {
     newTime:Time;
-    data: PathData;
-    nextData:PathData;
+    data: EventPath;
+    nextData:EventPath;
 }

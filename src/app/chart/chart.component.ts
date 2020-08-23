@@ -7,7 +7,7 @@ import { TimeUtil } from "./../../assets/TimeUtil";
 import { DateUtil } from "./../../assets/DateUtil";
 import { ColorPalette } from "./../../assets/ColorPalette";
 import { DragAbleAnchor, LeftOrRight } from "./../../assets/DragAbleAnchor";
-import { PathData, Data } from 'src/assets/Data';
+import { EventPath, Event } from 'src/assets/Event';
 import { AnchorDraggedResponce } from 'src/assets/AnchorDraggedResponce';
 import { cloneDeep } from "lodash"
 import { CalculationParams } from "./../../assets/CalculationParams";
@@ -31,7 +31,7 @@ export class ChartComponent implements OnInit, AfterViewInit, OnChanges {
 
   @Input() canvasConfig: any = null;
   @Input() dataArr: any = [];
-  filteredArr: PathData[] = [];
+  filteredArr: EventPath[] = [];
   indexes: string[] = [];
 
   private LeftAnchor_DragAble_State: DragAbleAnchor;
@@ -115,8 +115,8 @@ export class ChartComponent implements OnInit, AfterViewInit, OnChanges {
     if (changes.dataArr != undefined) {
       this.indexes = this.dataArr.map(x => { return x.id });
 
-      this.dataArr = <PathData[]>this.dataArr.map(x => {
-        let newObject: PathData = new PathData(x.date, x.lat, x.lng, x.eventType);
+      this.dataArr = <EventPath[]>this.dataArr.map(x => {
+        let newObject: EventPath = new EventPath(x.date, x.lat, x.lng, x.eventType);
         newObject.id = x.id;
         return newObject;
       });
@@ -219,14 +219,14 @@ export class ChartComponent implements OnInit, AfterViewInit, OnChanges {
 
   private updatePaths() {
     for (let index = 0; index < this.filteredArr.length; index++) {
-      const element: PathData = this.filteredArr[index];
+      const element: EventPath = this.filteredArr[index];
       let params: CalculationParams = new CalculationParams();
       this.calculatePathViaHTML(params, element);
       this.updatePathPositions(params, element);
     }
   }
 
-  private updatePathPositions(params: CalculationParams, element: PathData) {
+  private updatePathPositions(params: CalculationParams, element: EventPath) {
     let div: HTMLElement = <HTMLElement>document.getElementById(element.id);
     div.style.left = params.x + "px";
     div.style.width = params.strokeWidth + "px";
@@ -250,7 +250,7 @@ export class ChartComponent implements OnInit, AfterViewInit, OnChanges {
 
   private calculateCreateAndAddPathsViaHTML() {
     for (let index = 0; index < this.filteredArr.length; index++) {
-      const element: PathData = this.filteredArr[index];
+      const element: EventPath = this.filteredArr[index];
       let params = new CalculationParams();
       this.calculatePathViaHTML(params, element);
 
@@ -267,8 +267,8 @@ export class ChartComponent implements OnInit, AfterViewInit, OnChanges {
     const prevElem = selecteDataIndex != 0 ? this.filteredArr[selecteDataIndex - 1] : this.filteredArr[selecteDataIndex];
     const currentElem = this.filteredArr[selecteDataIndex];
 
-    this.LeftAnchor_DragAble_State.SetData(<PathData>currentElem, <PathData>prevElem);
-    this.RightAnchor_DragAble_State.SetData(<PathData>currentElem, <PathData>nextElem);
+    this.LeftAnchor_DragAble_State.SetData(<EventPath>currentElem, <EventPath>prevElem);
+    this.RightAnchor_DragAble_State.SetData(<EventPath>currentElem, <EventPath>nextElem);
 
     let leftAnc = document.getElementById("anchor__left");
     let rightAnc = document.getElementById("anchor__right");
@@ -325,7 +325,7 @@ export class ChartComponent implements OnInit, AfterViewInit, OnChanges {
     endOfTheDay.setSeconds(59);
 
     for (let index = 0; index < this.filteredArr.length; index++) {
-      const element: PathData = this.filteredArr[index];
+      const element: EventPath = this.filteredArr[index];
       const nextElem = index + 1 < this.filteredArr.length ? this.filteredArr[index + 1] : null;
 
       let diffTime: Time = nextElem != null ? TimeUtil.differDates(nextElem.date, element.date) : TimeUtil.differDates(endOfTheDay, element.date);
@@ -353,7 +353,7 @@ export class ChartComponent implements OnInit, AfterViewInit, OnChanges {
 
   //@params - pass by reference and get from that link result data
   //@element - pass by reference
-  private calculatePathViaHTML(params: CalculationParams, element: PathData) {
+  private calculatePathViaHTML(params: CalculationParams, element: EventPath) {
     let index = this.indexes.indexOf(element.id);
     if (index == 0) {
       //x position for stroke
@@ -537,7 +537,7 @@ export class ChartComponent implements OnInit, AfterViewInit, OnChanges {
 
 
 
-  private getById(id: string): PathData {
+  private getById(id: string): EventPath {
     let changedIndex = this.indexes.indexOf(id);
     return this.filteredArr[changedIndex];
   }

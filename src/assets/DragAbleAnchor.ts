@@ -1,4 +1,4 @@
-import { PathData } from "./Data"
+import { EventPath } from "./Event"
 import { fromEvent, Observable, Subject } from 'rxjs'
 import { takeUntil, switchMap, map, tap } from 'rxjs/operators'
 import { Time } from './Time';
@@ -13,8 +13,8 @@ export class DragAbleAnchor {
     private xPos1: number;
     private xPos2: number;
     private anchor: HTMLElement;
-    private dataObject: PathData;
-    private nextDataObject: PathData;
+    private dataObject: EventPath;
+    private nextDataObject: EventPath;
     private isInPlace;
     private side: LeftOrRight;
 
@@ -58,7 +58,7 @@ export class DragAbleAnchor {
     }
 
 
-    SetData(_data: PathData, _nextData: PathData) {
+    SetData(_data: EventPath, _nextData: EventPath) {
         this.dataObject = cloneDeep(_data);
         this.nextDataObject = cloneDeep(_nextData);
     }
@@ -92,7 +92,7 @@ export class DragAbleAnchor {
         }
     }
 
-    private newTimeForData(data: PathData, newXPos: number): Time {
+    private newTimeForData(data: EventPath, newXPos: number): Time {
         let oldPos = data.lineStroke.startPoint.x;
         let diffInPX: number;
         let newTime: Time;
