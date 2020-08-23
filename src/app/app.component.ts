@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { canvasConf, dataArr } from "./../assets/constants";
-import { Data } from '@angular/router';
+import { canvasConf } from "./../assets/constants";
+import { Event } from "./../assets/Event";
+import { EventService } from './event.service';
 
 @Component({
   selector: 'app-root',
@@ -8,37 +9,16 @@ import { Data } from '@angular/router';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent implements OnInit {
-  // canvasConf: any;
 
   canvasConf;
-  dataArray: Data[];
+  dataArray: Event[];
+
+  constructor(private eventService: EventService) { }
 
   ngOnInit(): void {
     this.canvasConf = canvasConf;
-    this.dataArray = this.initDataId(dataArr);
-    console.log(this.dataArray);
-
-
-
-  }
-
-  private initDataId(data: Data[]): Data[] {
-    for (let index = 0; index < data.length; index++) {
-      const element: Data = data[index];
-      element.id = this.generateId(3);
-    }
-
-    return data;
+    this.dataArray = this.eventService.getEvents();
   }
 
 
-  private generateId(length): string {
-    let result = '';
-    let characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
-    let charactersLength = characters.length;
-    for (let i = 0; i < length; i++) {
-      result += characters.charAt(Math.floor(Math.random() * charactersLength));
-    }
-    return result;
-  }
 }

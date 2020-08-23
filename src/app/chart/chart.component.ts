@@ -30,7 +30,7 @@ export class ChartComponent implements OnInit, AfterViewInit, OnChanges {
 
 
   @Input() canvasConfig: any = null;
-  @Input() dataArr: any = [];
+  @Input() dataArr: Event[] = [];
   filteredArr: EventPath[] = [];
   indexes: string[] = [];
 
@@ -112,7 +112,7 @@ export class ChartComponent implements OnInit, AfterViewInit, OnChanges {
 
   ngOnChanges(changes) {
 
-    if (changes.dataArr != undefined) {
+    if (changes.dataArr != undefined && changes.dataArr.currentValue != undefined) {
       this.indexes = this.dataArr.map(x => { return x.id });
 
       this.dataArr = <EventPath[]>this.dataArr.map(x => {
