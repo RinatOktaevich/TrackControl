@@ -1,20 +1,29 @@
 .body {
     padding: 0 0 0 0;
     font-family: sans-serif;
-    &>&-header {
+    width: 267px;
+    &-header {
+        display: grid;
+        grid-template-columns: 125px auto;
         font-size: 16px;
-        &>b>span {
+        margin-bottom: 34px;
+        line-height: 16px;
+        &__value {
             font-size: 24px;
             color: #527B3A;
-            margin-left: 115px;
         }
     }
     &-time {
         display: grid;
         grid-template-columns: 60% 40%;
+        grid-row-gap: 16px;
+        margin-bottom: 25px;
+        width: 211px;
     }
     &-saving>button {
         border-radius: 5px;
         padding: 3px 18px;
+        width: 195px;
+        font-size: 16px;
     }
 }
