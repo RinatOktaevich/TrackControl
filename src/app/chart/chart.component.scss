@@ -58,4 +58,11 @@ canvas {
             cursor: pointer;
         }
     }
+    & .currentDate {
+        position: absolute;
+        left: 484px;
+        top: 6px;
+        font-family: sans-serif;
+        font-size: 19px;
+    }
 }

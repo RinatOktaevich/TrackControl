@@ -26,7 +26,13 @@ export class AppComponent implements OnInit {
 
   onEventSelected(event: Event[]) {
     this.selectedEvent = event;
-    console.log(this.selectedEvent);
+    console.log(this.selectedEvent[0].date);
+    // console.log(this.selectedEvent[1].date.toUTCString());
+    console.log();
+    console.log();
+    console.log();
+    console.log();
+
 
   }
 

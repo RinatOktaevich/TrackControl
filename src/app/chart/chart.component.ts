@@ -68,6 +68,8 @@ export class ChartComponent implements OnInit, AfterViewInit, OnChanges {
   private onDutyColorDim = "rgba(242, 190, 68, 0.5)";
   ////////////
 
+  currentDate: Date;
+
   timeDurations = {
     offDutyTimeDur: new Time(0, 0),
     sbTimeDur: new Time(0, 0),
@@ -86,6 +88,8 @@ export class ChartComponent implements OnInit, AfterViewInit, OnChanges {
 
 
   ngOnInit(): void {
+    this.setCurrentDate();
+
     //cell config variables
     this.cellSize = this.canvasConfig.grid.cell.size;
     this.cellHalf = this.cellSize / 2;
@@ -177,6 +181,9 @@ export class ChartComponent implements OnInit, AfterViewInit, OnChanges {
 
     this.calculateTimeDurations(this.timeDurations);
     this.updatePaths();
+    console.log("anchor dragged id: " + changedElem.id);
+
+    this.raiseAnEvent(changedElem.id);
   }
 
   private onPathSelected(event) {
@@ -195,20 +202,10 @@ export class ChartComponent implements OnInit, AfterViewInit, OnChanges {
       let node: HTMLElement = <HTMLElement>otherElements[index];
       node.style.backgroundColor = this.EventTypeToColorPalette(node.classList[1]).dimColor;
     }
+    // //raise an event
+    console.log("path selected id" + elem.id);
 
-    //raise an event
-    let eventPath: EventPath = this.getById(elem.id);
-    let currentEventIndex = this.filteredArr.indexOf(eventPath);
-    let selectedEvent: Event = new Event(eventPath.date, eventPath.lat, eventPath.lng, eventPath.eventType);
-    selectedEvent.id = eventPath.id;
-
-    let nextEvent: Event;
-    let nextEventPath = this.filteredArr[currentEventIndex + 1];
-    if (nextEventPath != null) {
-      nextEvent = new Event(nextEventPath.date, nextEventPath.lat, nextEventPath.lng, nextEventPath.eventType);
-      nextEvent.id = nextEventPath.id;
-    }
-    this.eventWasSelected.emit([selectedEvent, nextEvent]);
+    this.raiseAnEvent(elem.id);
 
     //show anchors
     let xPosOffset = 7.5;
@@ -231,7 +228,21 @@ export class ChartComponent implements OnInit, AfterViewInit, OnChanges {
   ////////-----------EVENT SUBSCRIBERS------------------------------////////////////////////////
 
 
+  private raiseAnEvent(eventid: string) {
+    //raise an event
+    let eventPath: EventPath = this.getById(eventid);
+    let currentEventIndex = this.filteredArr.indexOf(eventPath);
+    let selectedEvent: Event = new Event(eventPath.date, eventPath.lat, eventPath.lng, eventPath.eventType);
+    selectedEvent.id = eventPath.id;
 
+    let nextEvent: Event;
+    let nextEventPath = this.filteredArr[currentEventIndex + 1];
+    if (nextEventPath != null) {
+      nextEvent = new Event(nextEventPath.date, nextEventPath.lat, nextEventPath.lng, nextEventPath.eventType);
+      nextEvent.id = nextEventPath.id;
+    }
+    this.eventWasSelected.emit([selectedEvent, nextEvent]);
+  }
 
 
   private updatePaths() {
@@ -467,19 +478,13 @@ export class ChartComponent implements OnInit, AfterViewInit, OnChanges {
   }
 
   private text() {
-    this.drawCurrentDate();
     this.drawHours();
     this.drawStateLabels();
     this.calculateTimeDurations(this.timeDurations);
   }
 
-  private drawCurrentDate() {
-    let date: Date = this.filteredArr[0].date;
-    let currentDate: string = DateUtil.DateConverter(date);
-
-    this.ctx.font = "20px sans-serif";
-    this.ctx.fillStyle = "#000";
-    this.ctx.fillText(currentDate, this.tempX + (this.cellSize * 10), this.tempY - 30);
+  private setCurrentDate() {
+    this.currentDate = this.filteredArr[0].date;
   }
 
   private drawStateLabels() {
