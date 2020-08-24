@@ -1,0 +1,20 @@
+.body {
+    padding: 0 0 0 0;
+    font-family: sans-serif;
+    &>&-header {
+        font-size: 16px;
+        &>b>span {
+            font-size: 24px;
+            color: #527B3A;
+            margin-left: 115px;
+        }
+    }
+    &-time {
+        display: grid;
+        grid-template-columns: 60% 40%;
+    }
+    &-saving>button {
+        border-radius: 5px;
+        padding: 3px 18px;
+    }
+}

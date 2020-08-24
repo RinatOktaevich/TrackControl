@@ -1,0 +1,16 @@
+<div class="body">
+    <div class="body-header"><b>Selected Event: <span>Driving</span></b></div>
+    <div class="body-time">
+        <div class="body-time-start__title"><b>Started at:</b></div>
+        <div class="body-time-start__timeValue">{{currentSelectedEvent.date}}</div>
+        <!-- on prev row  gonna be pipe to convert date to time 05:45 AM/PM -->
+
+        <div class="body-time-end__title"><b>Finished at:</b></div>
+        <div class="body-time-end__timeValue">{{nextEvent.date}}</div>
+        <!-- make pipe, if undefined, then show string  "end of the day" -->
+
+    </div>
+    <div class="body-saving">
+        <button (onclick)="onSaveChanges($event)">Save changes</button>
+    </div>
+</div>

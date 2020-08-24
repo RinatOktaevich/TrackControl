@@ -1,5 +1,14 @@
 <div class="container">
-    <app-chart (eventWasSelected)="onEventSelected($event)" [canvasConfig]="canvasConf" [dataArr]="dataArray">
-
+    <app-chart (eventWasUnTouched)="onEventWasUnTouched()" (eventWasSelected)="onEventSelected($event)" [canvasConfig]="canvasConf" [dataArr]="dataArray">
     </app-chart>
+    <div class="eventShow">
+        <div class="event-info" *ngIf="selectedEvent!=undefined">
+            <event-info [selectedEvent]="selectedEvent"></event-info>
+        </div>
+        <div class="eventMap">
+            <div class="dm">
+                skadjksajdlljjdklasd
+            </div>
+        </div>
+    </div>
 </div>

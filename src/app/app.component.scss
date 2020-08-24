@@ -1,13 +1,21 @@
 .container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    // display: flex;
+    // justify-content: center;
+    // align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+    &>.eventShow {
+        margin-top: 30px;
+        display: grid;
+        grid-template-columns: 1fr 2fr;
+    }
 }
 
 app-chart {
     // border: solid rgb(199, 199, 199) 1px;
     position: relative;
 }
-.sd{
-    color:#246299;
+
+.sd {
+    color: #246299;
 }

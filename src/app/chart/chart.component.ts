@@ -28,7 +28,8 @@ export class ChartComponent implements OnInit, AfterViewInit, OnChanges {
   // @Output() assetDeletedEvent: EventEmitter<IAsset> = new EventEmitter<IAsset>();
 
 
-  @Output() eventWasSelected: EventEmitter<Event> = new EventEmitter<Event>();
+  @Output() eventWasSelected: EventEmitter<Event[]> = new EventEmitter<Event[]>();
+  @Output() eventWasUnTouched: EventEmitter<void> = new EventEmitter<void>();
 
   @Input() canvasConfig: any = null;
   @Input() dataArr: Event[] = [];
@@ -161,7 +162,7 @@ export class ChartComponent implements OnInit, AfterViewInit, OnChanges {
     this.filteredArr = cloneDeep(this.dataArr);
     this.calculateTimeDurations(this.timeDurations);
     this.updatePaths();
-    let sd = this.filteredArr;
+    this.eventWasUnTouched.emit();
   }
 
   // First head of an event 
@@ -197,9 +198,17 @@ export class ChartComponent implements OnInit, AfterViewInit, OnChanges {
 
     //raise an event
     let eventPath: EventPath = this.getById(elem.id);
+    let currentEventIndex = this.filteredArr.indexOf(eventPath);
     let selectedEvent: Event = new Event(eventPath.date, eventPath.lat, eventPath.lng, eventPath.eventType);
     selectedEvent.id = eventPath.id;
-    this.eventWasSelected.emit(selectedEvent);
+
+    let nextEvent: Event;
+    let nextEventPath = this.filteredArr[currentEventIndex + 1];
+    if (nextEventPath != null) {
+      nextEvent = new Event(nextEventPath.date, nextEventPath.lat, nextEventPath.lng, nextEventPath.eventType);
+      nextEvent.id = nextEventPath.id;
+    }
+    this.eventWasSelected.emit([selectedEvent, nextEvent]);
 
     //show anchors
     let xPosOffset = 7.5;

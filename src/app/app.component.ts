@@ -13,7 +13,7 @@ export class AppComponent implements OnInit {
   canvasConf;
   dataArray: Event[];
 
-  selectedEvent: Event;
+  selectedEvent: Event[];
 
   constructor(private eventService: EventService) { }
 
@@ -24,10 +24,15 @@ export class AppComponent implements OnInit {
 
 
 
-  onEventSelected(event: Event) {
+  onEventSelected(event: Event[]) {
     this.selectedEvent = event;
     console.log(this.selectedEvent);
 
+  }
+
+
+  onEventWasUnTouched() {
+    this.selectedEvent = null;
   }
 
 
