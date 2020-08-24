@@ -63,13 +63,6 @@ export class DragAbleAnchor {
         this.nextDataObject = cloneDeep(_nextData);
     }
 
-
-
-
-
-
-
-
     private onMouseMove(e) {
         this.xPos1 = this.xPos2 - e.clientX;
         this.xPos2 = e.clientX;

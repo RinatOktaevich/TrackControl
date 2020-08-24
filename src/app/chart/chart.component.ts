@@ -112,8 +112,8 @@ export class ChartComponent implements OnInit, AfterViewInit, OnChanges {
     let rightAnchor = document.getElementById("anchor__right");
     this.LeftAnchor_DragAble_State = new DragAbleAnchor(leftAnchor, LeftOrRight.Left);
     this.RightAnchor_DragAble_State = new DragAbleAnchor(rightAnchor, LeftOrRight.Right);
-    this.LeftAnchor_DragAble_State.SubscribeOnDrag(this.OnAnchorDragged.bind(this));
-    this.RightAnchor_DragAble_State.SubscribeOnDrag(this.OnAnchorDragged.bind(this));
+    this.LeftAnchor_DragAble_State.SubscribeOnDrag(this.OnLeftAnchorDragged.bind(this));
+    this.RightAnchor_DragAble_State.SubscribeOnDrag(this.OnRightAnchorDragged.bind(this));
   }
 
   ngOnChanges(changes) {
@@ -170,20 +170,44 @@ export class ChartComponent implements OnInit, AfterViewInit, OnChanges {
   }
 
   // First head of an event 
-  private OnAnchorDragged(_data: AnchorDraggedResponce) {
+  private OnLeftAnchorDragged(_data: AnchorDraggedResponce) {
     if (this.wasDragged == false) {
       this.wasDragged = true;
     }
 
-    let changedElem = this.getById(_data.data.id);
+    let index = this.filteredArr.findIndex(x => x.id == _data.data.id);
+
+    let changedElem = this.filteredArr[index];
     changedElem.date.setHours(_data.newTime.hours);
     changedElem.date.setMinutes(_data.newTime.minutes);
+
+    let dependent = this.filteredArr[index + 1];
 
     this.calculateTimeDurations(this.timeDurations);
     this.updatePaths();
     console.log("anchor dragged id: " + changedElem.id);
 
-    this.raiseAnEvent(changedElem.id);
+    this.raiseAnEvent(changedElem, dependent);
+  }
+
+  private OnRightAnchorDragged(_data: AnchorDraggedResponce) {
+    if (this.wasDragged == false) {
+      this.wasDragged = true;
+    }
+
+    //this is next event so we need prev
+    let index = this.filteredArr.findIndex(x => x.id == _data.data.id);
+
+    let changedElem = this.filteredArr[index];
+    changedElem.date.setHours(_data.newTime.hours);
+    changedElem.date.setMinutes(_data.newTime.minutes);
+
+    let dependent = this.filteredArr[index - 1];
+
+    this.calculateTimeDurations(this.timeDurations);
+    this.updatePaths();
+
+    this.raiseAnEvent(dependent, changedElem);
   }
 
   private onPathSelected(event) {
@@ -204,8 +228,12 @@ export class ChartComponent implements OnInit, AfterViewInit, OnChanges {
     }
     // //raise an event
     console.log("path selected id" + elem.id);
+    let index = this.filteredArr.findIndex(x => x.id == elem.id);
 
-    this.raiseAnEvent(elem.id);
+    let changed = this.filteredArr[index];
+    let dependent = this.filteredArr[index + 1];
+
+    this.raiseAnEvent(changed, dependent);
 
     //show anchors
     let xPosOffset = 7.5;
@@ -228,15 +256,13 @@ export class ChartComponent implements OnInit, AfterViewInit, OnChanges {
   ////////-----------EVENT SUBSCRIBERS------------------------------////////////////////////////
 
 
-  private raiseAnEvent(eventid: string) {
+  private raiseAnEvent(changedEvent: EventPath, dependent: EventPath) {
     //raise an event
-    let eventPath: EventPath = this.getById(eventid);
-    let currentEventIndex = this.filteredArr.indexOf(eventPath);
-    let selectedEvent: Event = new Event(eventPath.date, eventPath.lat, eventPath.lng, eventPath.eventType);
-    selectedEvent.id = eventPath.id;
+    let selectedEvent: Event = new Event(changedEvent.date, changedEvent.lat, changedEvent.lng, changedEvent.eventType);
+    selectedEvent.id = changedEvent.id;
 
     let nextEvent: Event;
-    let nextEventPath = this.filteredArr[currentEventIndex + 1];
+    let nextEventPath = dependent;
     if (nextEventPath != null) {
       nextEvent = new Event(nextEventPath.date, nextEventPath.lat, nextEventPath.lng, nextEventPath.eventType);
       nextEvent.id = nextEventPath.id;
