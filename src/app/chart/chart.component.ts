@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, AfterViewInit, OnChanges } from '@angular/core';
+import { Component, OnInit, Input, AfterViewInit, OnChanges, EventEmitter, Output } from '@angular/core';
 import { Point } from "./../../assets/Point";
 import { Time } from "./../../assets/Time"
 import { Directions } from "./../../assets/Direction";
@@ -28,6 +28,7 @@ export class ChartComponent implements OnInit, AfterViewInit, OnChanges {
   // @Output() assetDeletedEvent: EventEmitter<IAsset> = new EventEmitter<IAsset>();
 
 
+  @Output() eventWasSelected: EventEmitter<Event> = new EventEmitter<Event>();
 
   @Input() canvasConfig: any = null;
   @Input() dataArr: Event[] = [];
@@ -178,6 +179,7 @@ export class ChartComponent implements OnInit, AfterViewInit, OnChanges {
   }
 
   private onPathSelected(event) {
+
     if (this.wasDragged) {
       this.filteredArr = cloneDeep(this.dataArr);
       this.calculateTimeDurations(this.timeDurations);
@@ -192,6 +194,12 @@ export class ChartComponent implements OnInit, AfterViewInit, OnChanges {
       let node: HTMLElement = <HTMLElement>otherElements[index];
       node.style.backgroundColor = this.EventTypeToColorPalette(node.classList[1]).dimColor;
     }
+
+    //raise an event
+    let eventPath: EventPath = this.getById(elem.id);
+    let selectedEvent: Event = new Event(eventPath.date, eventPath.lat, eventPath.lng, eventPath.eventType);
+    selectedEvent.id = eventPath.id;
+    this.eventWasSelected.emit(selectedEvent);
 
     //show anchors
     let xPosOffset = 7.5;

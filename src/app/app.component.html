@@ -1,5 +1,5 @@
 <div class="container">
-    <app-chart [canvasConfig]="canvasConf" [dataArr]="dataArray">
+    <app-chart (eventWasSelected)="onEventSelected($event)" [canvasConfig]="canvasConf" [dataArr]="dataArray">
 
     </app-chart>
 </div>

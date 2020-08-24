@@ -13,11 +13,21 @@ export class AppComponent implements OnInit {
   canvasConf;
   dataArray: Event[];
 
+  selectedEvent: Event;
+
   constructor(private eventService: EventService) { }
 
   ngOnInit(): void {
     this.canvasConf = canvasConf;
     this.dataArray = this.eventService.getEvents();
+  }
+
+
+
+  onEventSelected(event: Event) {
+    this.selectedEvent = event;
+    console.log(this.selectedEvent);
+
   }
 
 
