@@ -5,10 +5,8 @@
         <div class="event-info" *ngIf="selectedEvent!=undefined">
             <event-info [selectedEvent]="selectedEvent"></event-info>
         </div>
-        <div class="eventMap">
-            <div class="dm">
-                skadjksajdlljjdklasd
-            </div>
+        <div class="eventMap" *ngIf="selectedEvent!=undefined">
+            <google-map [eventsDataArr]="selectedEvent"></google-map>
         </div>
     </div>
 </div>
