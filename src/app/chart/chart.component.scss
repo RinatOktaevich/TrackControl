@@ -1,6 +1,3 @@
-canvas {
-    border: solid rgb(199, 199, 199) 1px;
-}
 
 #canvas-wrap {
     position: relative;
@@ -9,7 +6,6 @@ canvas {
         position: absolute;
         z-index: 3;
         top: 165px;
-        // border: dashed red 1px;
         &#anchor__left {
             left: 100px;
         }

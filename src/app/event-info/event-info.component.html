@@ -1,20 +1,16 @@
 <div class="body">
     <div class="body-header">
         <div class="body-heder__title"><b>Selected Event:</b></div>
-        <div class="body-header__value">{{currentSelectedEvent.eventType}}</div>
+        <div class="body-header__value" [style.color]="ChooseColor()">{{currentSelectedEvent.eventType}}</div>
     </div>
     <div class="body-time">
         <div class="body-time-start__title"><b>Started at:</b></div>
         <div class="body-time-start__timeValue">{{currentSelectedEvent.date | date:'hh:mm aaa'}}</div>
-        <!-- on prev row  gonna be pipe to convert date to time 05:45 AM/PM -->
         <div class="body-time-end__title"><b>Finished at:</b></div>
         <div class="body-time-end__timeValue">
             <div *ngIf="nextEvent!=undefined;then DateDefined  else DateUnDefined"></div>
         </div>
-        <!-- make pipe, if undefined, then show string  "end of the day" -->
-
         <ng-template #DateDefined>{{nextEvent.date | date:'hh:mm aaa'}} </ng-template>
         <ng-template #DateUnDefined>End of the day</ng-template>
-
     </div>
 </div>

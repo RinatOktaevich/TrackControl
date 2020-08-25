@@ -17,10 +17,6 @@ export class MapComponent implements OnInit, AfterViewInit, OnChanges {
   center: google.maps.LatLngLiteral;
   map: google.maps.Map;
   zoom: number = 5;
-  mapProp; //= {
-  //   center: this.center,
-  // };
-  // marker: google.maps.Marker;
 
   directionsRenderer: google.maps.DirectionsRenderer;
   directionsService: google.maps.DirectionsService;
@@ -33,12 +29,6 @@ export class MapComponent implements OnInit, AfterViewInit, OnChanges {
   ngOnChanges(changes) {
     if (changes.eventsDataArr.currentValue != undefined) {
       this.eventsDataArr = cloneDeep(changes.eventsDataArr.currentValue);
-      // reset prev marker, if it was
-      // if (this.marker != undefined) {
-      //   this.marker.setMap(null);
-      // }
-      // this.directionsRenderer.unbindAll();
-
       this.checkData();
     }
 
@@ -81,8 +71,6 @@ export class MapComponent implements OnInit, AfterViewInit, OnChanges {
       //end of the day so we have only one event
       let evnt = this.eventsDataArr[0];
       // this.addMarker({ lat: evnt.lat, lng: evnt.lng });
-
-
       let pos = {
         lat: this.eventsDataArr[0].lat,
         lng: this.eventsDataArr[0].lng,

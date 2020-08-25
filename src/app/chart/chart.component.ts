@@ -4,7 +4,6 @@ import { Time } from "./../../assets/Time"
 import { Directions } from "./../../assets/Direction";
 import { EventType } from "./../../assets/EventType";
 import { TimeUtil } from "./../../assets/TimeUtil";
-import { DateUtil } from "./../../assets/DateUtil";
 import { ColorPalette } from "./../../assets/ColorPalette";
 import { DragAbleAnchor, LeftOrRight } from "./../../assets/DragAbleAnchor";
 import { EventPath, Event } from 'src/assets/Event';
@@ -146,25 +145,6 @@ export class ChartComponent implements OnInit, AfterViewInit, OnChanges {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
   ////////-----------EVENT SUBSCRIBERS------------------------------////////////////////////////
   private canvasOnClick() {
     this.hideAnchors();
@@ -179,20 +159,17 @@ export class ChartComponent implements OnInit, AfterViewInit, OnChanges {
     if (this.wasDragged == false) {
       this.wasDragged = true;
     }
-
     let index = this.filteredArr.findIndex(x => x.id == _data.data.id);
 
     let changedElem = this.filteredArr[index];
     changedElem.date.setHours(_data.newTime.hours);
     changedElem.date.setMinutes(_data.newTime.minutes);
-
     let dependent = this.filteredArr[index + 1];
 
     this.calculateTimeDurations(this.timeDurations);
     this.updatePaths();
     console.log("anchor dragged id: " + changedElem.id);
 
-    // this.prepareEmitData(changedElem, dependent);
     this.anchorWasDraged.emit(this.prepareEmitData(changedElem, dependent));
   }
 
@@ -200,26 +177,21 @@ export class ChartComponent implements OnInit, AfterViewInit, OnChanges {
     if (this.wasDragged == false) {
       this.wasDragged = true;
     }
-
     //this is next event so we need prev
     let index = this.filteredArr.findIndex(x => x.id == _data.data.id);
-
     let changedElem = this.filteredArr[index];
     changedElem.date.setHours(_data.newTime.hours);
     changedElem.date.setMinutes(_data.newTime.minutes);
-
     let dependent = this.filteredArr[index - 1];
 
     this.calculateTimeDurations(this.timeDurations);
     this.updatePaths();
 
-    // this.raiseAnEvent(dependent, changedElem);
     this.anchorWasDraged.emit(this.prepareEmitData(dependent, changedElem));
 
   }
 
   private onPathSelected(event) {
-
     if (this.wasDragged) {
       this.filteredArr = cloneDeep(this.dataArr);
       this.calculateTimeDurations(this.timeDurations);
@@ -241,23 +213,19 @@ export class ChartComponent implements OnInit, AfterViewInit, OnChanges {
     let changed = this.filteredArr[index];
     let dependent = this.filteredArr[index + 1];
 
-    // this.raiseAnEvent(changed, dependent);
     this.eventWasSelected.emit(this.prepareEmitData(changed, dependent));
 
     //show anchors
     let xPosOffset = 7.5;
     let yPosOffset = 28;
     let anchorHeight = (this.tempY + this.cellSize * 4) - this.PxToValue(elem.style.top) + yPosOffset;
-
     let elemLeftPos = this.PxToValue(elem.style.left);
     let elemTopPos = this.PxToValue(elem.style.top);
     let elemWidth = this.PxToValue(elem.style.width);
     let x1 = elemLeftPos - xPosOffset;
     let y1 = elemTopPos;
-
     let x2 = elemLeftPos + elemWidth - xPosOffset;
     let y2 = elemTopPos;
-
     let dataId: string = elem.id;
 
     this.showAnchors(new Point(x1, y1), new Point(x2, y2), anchorHeight, dataId);
@@ -277,7 +245,6 @@ export class ChartComponent implements OnInit, AfterViewInit, OnChanges {
       nextEvent.id = nextEventPath.id;
     }
     return [selectedEvent, nextEvent];
-    // this.eventWasSelected.emit([selectedEvent, nextEvent]);
   }
 
 
@@ -295,21 +262,6 @@ export class ChartComponent implements OnInit, AfterViewInit, OnChanges {
     div.style.left = params.x + "px";
     div.style.width = params.strokeWidth + "px";
   }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
   private calculateCreateAndAddPathsViaHTML() {
@@ -364,19 +316,6 @@ export class ChartComponent implements OnInit, AfterViewInit, OnChanges {
 
     this.canvasWrap.appendChild(path);
   }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
   /////////// CALCULATIONS-------------------////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -455,28 +394,6 @@ export class ChartComponent implements OnInit, AfterViewInit, OnChanges {
   }
 
   /////////// CALCULATIONS-------------------////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
   ///////////////////////////////
 
@@ -574,31 +491,6 @@ export class ChartComponent implements OnInit, AfterViewInit, OnChanges {
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  private getById(id: string): EventPath {
-    let changedIndex = this.indexes.indexOf(id);
-    return this.filteredArr[changedIndex];
-  }
 
 
   private hideAnchors() {
