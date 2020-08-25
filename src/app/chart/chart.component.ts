@@ -128,6 +128,10 @@ export class ChartComponent implements OnInit, AfterViewInit, OnChanges {
         return newObject;
       });
       this.filteredArr = cloneDeep(this.dataArr);
+      this.calculateTimeDurations(this.timeDurations);
+      this.updatePaths();
+      this.hideAnchors();
+      this.eventWasUnTouched.emit();
     }
   }
 

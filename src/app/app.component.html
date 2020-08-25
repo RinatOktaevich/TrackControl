@@ -1,12 +1,15 @@
 <div class="container">
     <app-chart (anchorWasDraged)="onAnchorDraged($event)" (eventWasUnTouched)="onEventWasUnTouched()" (eventWasSelected)="onEventSelected($event)" [canvasConfig]="canvasConf" [dataArr]="dataArray">
     </app-chart>
-    <div class="eventShow">
+    <div class="event-print">
         <div class="event-info" *ngIf="selectedEvent!=undefined">
             <event-info [selectedEvent]="timeChangedEvents"></event-info>
+            <button (click)="onSaveChanges()">Save changes</button>
+
         </div>
         <div class="eventMap" *ngIf="selectedEvent!=undefined">
             <google-map [eventsDataArr]="selectedEvent"></google-map>
         </div>
+       
     </div>
 </div>

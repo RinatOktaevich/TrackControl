@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { canvasConf } from "./../assets/constants";
+import { canvasConf, dataArr } from "./../assets/constants";
 import { Event } from "./../assets/Event";
 import { EventService } from './event.service';
 import { cloneDeep } from "lodash";
@@ -26,17 +26,30 @@ export class AppComponent implements OnInit {
 
 
   onAnchorDraged(events: Event[]) {
-    this.timeChangedEvents = events; 
+    this.timeChangedEvents = events;
+    console.log(this.timeChangedEvents[0].date + " " + this.timeChangedEvents[1].date);
+
   }
 
   onEventSelected(events: Event[]) {
     this.selectedEvent = events;
     this.timeChangedEvents = events;
+    console.log(this.timeChangedEvents[0].date + " " + this.timeChangedEvents[1].date);
+
   }
 
 
   onEventWasUnTouched() {
     this.selectedEvent = null;
+  }
+
+
+  onSaveChanges() {
+    this.eventService.setEvent(this.timeChangedEvents[0]);
+    if (this.timeChangedEvents[1] != undefined) {
+      this.eventService.setEvent(this.timeChangedEvents[1]);
+    }
+    this.dataArray = cloneDeep(this.eventService.getEvents());
   }
 
 

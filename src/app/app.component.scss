@@ -4,18 +4,19 @@
     // align-items: center;
     max-width: 1200px;
     margin: 0 auto;
-    &>.eventShow {
+    .event-print {
         margin-top: 30px;
         display: grid;
         grid-template-columns: 1fr 2fr;
+        .event-info>button {
+            border-radius: 5px;
+            padding: 3px 18px;
+            width: 195px;
+            font-size: 16px;
+        }
     }
 }
 
 app-chart {
-    // border: solid rgb(199, 199, 199) 1px;
     position: relative;
-}
-
-google-map{
-    
 }
