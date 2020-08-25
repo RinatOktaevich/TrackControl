@@ -1,9 +1,9 @@
 <div class="container">
-    <app-chart (eventWasUnTouched)="onEventWasUnTouched()" (eventWasSelected)="onEventSelected($event)" [canvasConfig]="canvasConf" [dataArr]="dataArray">
+    <app-chart (anchorWasDraged)="onAnchorDraged($event)" (eventWasUnTouched)="onEventWasUnTouched()" (eventWasSelected)="onEventSelected($event)" [canvasConfig]="canvasConf" [dataArr]="dataArray">
     </app-chart>
     <div class="eventShow">
         <div class="event-info" *ngIf="selectedEvent!=undefined">
-            <event-info [selectedEvent]="selectedEvent"></event-info>
+            <event-info [selectedEvent]="timeChangedEvents"></event-info>
         </div>
         <div class="eventMap" *ngIf="selectedEvent!=undefined">
             <google-map [eventsDataArr]="selectedEvent"></google-map>

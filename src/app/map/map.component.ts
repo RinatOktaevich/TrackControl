@@ -31,7 +31,7 @@ export class MapComponent implements OnInit, AfterViewInit, OnChanges {
   }
 
   ngOnChanges(changes) {
-    if (changes.eventsDataArr != undefined) {
+    if (changes.eventsDataArr.currentValue != undefined) {
       this.eventsDataArr = cloneDeep(changes.eventsDataArr.currentValue);
       // reset prev marker, if it was
       // if (this.marker != undefined) {

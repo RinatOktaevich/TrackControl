@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { canvasConf } from "./../assets/constants";
 import { Event } from "./../assets/Event";
 import { EventService } from './event.service';
+import { cloneDeep } from "lodash";
 
 @Component({
   selector: 'app-root',
@@ -14,6 +15,7 @@ export class AppComponent implements OnInit {
   dataArray: Event[];
 
   selectedEvent: Event[];
+  timeChangedEvents: Event[];
 
   constructor(private eventService: EventService) { }
 
@@ -23,9 +25,13 @@ export class AppComponent implements OnInit {
   }
 
 
+  onAnchorDraged(events: Event[]) {
+    this.timeChangedEvents = events; 
+  }
 
-  onEventSelected(event: Event[]) {
-    this.selectedEvent = event;
+  onEventSelected(events: Event[]) {
+    this.selectedEvent = events;
+    this.timeChangedEvents = events;
   }
 
 

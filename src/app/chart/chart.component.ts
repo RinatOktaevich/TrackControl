@@ -29,6 +29,7 @@ export class ChartComponent implements OnInit, AfterViewInit, OnChanges {
 
 
   @Output() eventWasSelected: EventEmitter<Event[]> = new EventEmitter<Event[]>();
+  @Output() anchorWasDraged: EventEmitter<Event[]> = new EventEmitter<Event[]>();
   @Output() eventWasUnTouched: EventEmitter<void> = new EventEmitter<void>();
 
   @Input() canvasConfig: any = null;
@@ -187,7 +188,8 @@ export class ChartComponent implements OnInit, AfterViewInit, OnChanges {
     this.updatePaths();
     console.log("anchor dragged id: " + changedElem.id);
 
-    this.raiseAnEvent(changedElem, dependent);
+    // this.prepareEmitData(changedElem, dependent);
+    this.anchorWasDraged.emit(this.prepareEmitData(changedElem, dependent));
   }
 
   private OnRightAnchorDragged(_data: AnchorDraggedResponce) {
@@ -207,7 +209,9 @@ export class ChartComponent implements OnInit, AfterViewInit, OnChanges {
     this.calculateTimeDurations(this.timeDurations);
     this.updatePaths();
 
-    this.raiseAnEvent(dependent, changedElem);
+    // this.raiseAnEvent(dependent, changedElem);
+    this.anchorWasDraged.emit(this.prepareEmitData(dependent, changedElem));
+
   }
 
   private onPathSelected(event) {
@@ -233,7 +237,8 @@ export class ChartComponent implements OnInit, AfterViewInit, OnChanges {
     let changed = this.filteredArr[index];
     let dependent = this.filteredArr[index + 1];
 
-    this.raiseAnEvent(changed, dependent);
+    // this.raiseAnEvent(changed, dependent);
+    this.eventWasSelected.emit(this.prepareEmitData(changed, dependent));
 
     //show anchors
     let xPosOffset = 7.5;
@@ -256,7 +261,7 @@ export class ChartComponent implements OnInit, AfterViewInit, OnChanges {
   ////////-----------EVENT SUBSCRIBERS------------------------------////////////////////////////
 
 
-  private raiseAnEvent(changedEvent: EventPath, dependent: EventPath) {
+  private prepareEmitData(changedEvent: EventPath, dependent: EventPath): Event[] {
     //raise an event
     let selectedEvent: Event = new Event(changedEvent.date, changedEvent.lat, changedEvent.lng, changedEvent.eventType);
     selectedEvent.id = changedEvent.id;
@@ -267,7 +272,8 @@ export class ChartComponent implements OnInit, AfterViewInit, OnChanges {
       nextEvent = new Event(nextEventPath.date, nextEventPath.lat, nextEventPath.lng, nextEventPath.eventType);
       nextEvent.id = nextEventPath.id;
     }
-    this.eventWasSelected.emit([selectedEvent, nextEvent]);
+    return [selectedEvent, nextEvent];
+    // this.eventWasSelected.emit([selectedEvent, nextEvent]);
   }
 
 
